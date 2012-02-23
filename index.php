@@ -21,9 +21,6 @@ if( $_GET['q'] == "add_new_event" ){
 		}
 		
 		mkdir( $path );
-		//Errors
-		//mkdir( $path . "/errors" );
-		//file_put_contents( $path . "/errors/errors.txt","" );
 		//Invite
 		mkdir( $path . "/invite"  );
 		file_put_contents( $path . "/invite/sended.txt","" );
@@ -41,8 +38,8 @@ if( $_GET['q'] == "add_new_event" ){
 		file_put_contents( $path . "/reminder_not_registered/to_be_sended.txt","" );
 		//Reminder registered
 		mkdir( $path . "/reminder_registered"  );
-		file_put_contents( $path . "/registered/sended.txt","" );
-		file_put_contents( $path . "/registered/to_be_sended.txt","" );
+		file_put_contents( $path . "/reminder_registered/sended.txt","" );
+		file_put_contents( $path . "/reminder_registered/to_be_sended.txt","" );
 	}else{
 		exit( "No id!" );	
 	}
@@ -65,8 +62,15 @@ if( $_GET['q'] == "register" ){
 		exit("Not valid email!");
 	}
 }
-
-
+//--------------------------
+// Reminders
+//---------------------------
+if( $_GET['q'] == "create_reminders" ){
+	
+	$reminders_path = $data_path . $id ."/". $posting ."/to_be_sended.txt";
+	
+	
+}
 //--------------------------
 // Single mail addresses
 //---------------------------
@@ -94,8 +98,6 @@ if( $_GET['q'] == "add_mail" ){
 }
 
 if( $_GET['q'] == "send_mail" ){
-	
-
 	
 	//-------------------------
 	// Get next line
