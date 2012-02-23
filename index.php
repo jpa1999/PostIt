@@ -33,13 +33,13 @@ if( $_GET['q'] == "add_new_event" ){
 		mkdir( $path . "/registered"  );
 		file_put_contents( $path . "/registered/registered.txt","" );
 		//Reminder not registered
-		mkdir( $path . "/reminder_not_registered"  );
-		file_put_contents( $path . "/reminder_not_registered/sended.txt","" );
-		file_put_contents( $path . "/reminder_not_registered/to_be_sended.txt","" );
+		mkdir( $path . "/reminders_not_registered"  );
+		file_put_contents( $path . "/reminders_not_registered/sended.txt","" );
+		file_put_contents( $path . "/reminders_not_registered/to_be_sended.txt","" );
 		//Reminder registered
-		mkdir( $path . "/reminder_registered"  );
-		file_put_contents( $path . "/reminder_registered/sended.txt","" );
-		file_put_contents( $path . "/reminder_registered/to_be_sended.txt","" );
+		mkdir( $path . "/reminders_registered"  );
+		file_put_contents( $path . "/reminders_registered/sended.txt","" );
+		file_put_contents( $path . "/reminders_registered/to_be_sended.txt","" );
 	}else{
 		exit( "No id!" );	
 	}
@@ -67,19 +67,43 @@ if( $_GET['q'] == "register" ){
 //---------------------------
 if( $_GET['q'] == "create_reminders" ){
 	
-	$reminders_registered_path = $data_path . $id ."/reminder_registered/to_be_sended.txt";
+	if( empty($id) ){
+		reportError("Empty id");
+		exit("Empty ID!");
+	}
+	$reminders_registered_path = $data_path . $id ."/reminders_registered/to_be_sended.txt";
 	$reminders_not_registered_path = $data_path . $id ."/reminders_not_registered/to_be_sended.txt";
 	
 	$sended_path = $data_path . $id ."/invite/sended.txt";
-	$registered_path = $data_path . $id ."/invite/registered.txt";
+	$registered_path = $data_path . $id ."/registered/registered.txt";
 	
-	$sended = file( $sended_path );
-	$registered = file( $registered_path );
+	$sended = file( $sended_path, FILE_IGNORE_NEW_LINES );
+	$registered = file( $registered_path, FILE_IGNORE_NEW_LINES );
 	
 	print_r( $sended );
 	echo "---------------------";
 	print_r( $registered );
 	
+	$reminders_registered = array();
+	$reminders_not_registered = array();
+	
+	foreach( $sended as $sended_item ){
+		
+		$item = trim( $sended_item );
+		if( empty($item) ) continue;
+		
+		if( in_array( $item, $registered )  ){
+			array_push( $reminders_registered, $item."\n" );
+		}else{
+			array_push( $reminders_not_registered, $item."\n");
+		}
+	}
+	print_r( $reminders_registered );
+	echo "---------------------";
+	print_r( $reminders_not_registered );
+	
+	saveArrayToFile( $reminders_registered_path, $reminders_registered );
+	saveArrayToFile( $reminders_not_registered_path, $reminders_not_registered );
 }
 //--------------------------
 // Single mail addresses
@@ -96,20 +120,37 @@ if( $_GET['q'] == "remove_mail" ){
 	}
 }
 
-if( $_GET['q'] == "add_mail" ){
+if( $_GET['q'] == "add_mail_to_invite" ){
+	addMail("invite");
+}
+
+
+
+if( $_GET['q'] == "send_invite" ){
+	sendOneEmail( "invite" );
+}
+
+
+//---------------------------
+// functions
+//---------------------------
+function addMail( $posting_type ){
 	
-	$path = $data_path . $id ."/". $posting ."/". $state .".txt";
+	global $data_path;
+	global $id;
+	global $email;
+	
+	if( $posting_type =="invite" ){
+		$path = $data_path . $id ."/invite/to_be_sended.txt";	
+	}else{
+		exit("Wrong posting type");
+	}
 	
 	if( validEmail($email) ){
 		addLine(  $path, $email  );
 	}else{
 		reportError("not valid email");
 	}
-}
-
-if( $_GET['q'] == "send_invite" ){
-	
-	sendOneEmail( "invite" );
 }
 
 function sendOneEmail( $posting_type ){
@@ -143,10 +184,6 @@ function sendOneEmail( $posting_type ){
 	addLine( $sended_path, $email );
 }
 
-
-//---------------------------
-// functions
-//---------------------------
 function removeLine( $path, $email ){
 	
 	
@@ -172,19 +209,16 @@ function addLine( $path, $email ){
 }
 
 function popLine ( $path ){
-	
 	$lines = file( $path, FILE_SKIP_EMPTY_LINES  );
-	
 	$line = array_pop( $lines );
-	
 	saveArrayToFile( $path, $lines );
-	
 	return $line;
-	
 }
 
 function saveArrayToFile( $path, $array ){
 	$array_string = implode( $array ); 
+	echo"?????????????????????";
+	print_r( $array_string );
 	file_put_contents( $path, $array_string );
 }
 //-------------------------
