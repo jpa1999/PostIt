@@ -67,8 +67,18 @@ if( $_GET['q'] == "register" ){
 //---------------------------
 if( $_GET['q'] == "create_reminders" ){
 	
-	$reminders_path = $data_path . $id ."/". $posting ."/to_be_sended.txt";
+	$reminders_registered_path = $data_path . $id ."/reminder_registered/to_be_sended.txt";
+	$reminders_not_registered_path = $data_path . $id ."/reminders_not_registered/to_be_sended.txt";
 	
+	$sended_path = $data_path . $id ."/invite/sended.txt";
+	$registered_path = $data_path . $id ."/invite/registered.txt";
+	
+	$sended = file( $sended_path );
+	$registered = file( $registered_path );
+	
+	print_r( $sended );
+	echo "---------------------";
+	print_r( $registered );
 	
 }
 //--------------------------
@@ -97,13 +107,27 @@ if( $_GET['q'] == "add_mail" ){
 	}
 }
 
-if( $_GET['q'] == "send_mail" ){
+if( $_GET['q'] == "send_invite" ){
 	
+	sendOneEmail( "invite" );
+}
+
+function sendOneEmail( $posting_type ){
+	
+	global $id;
+	global $data_path;
+	
+	if( $posting_type =="invite" ){
+		$to_be_sended_path = $data_path . $id ."/invite/to_be_sended.txt";	
+		$sended_path = $data_path . $id ."/invite/sended.txt";
+	}else{
+		exit("Wrong posting type");
+	}
 	//-------------------------
 	// Get next line
 	//-------------------------
-	$path = $data_path . $id ."/". $posting ."/to_be_sended.txt";
-	$email = popLine ( $path );
+	
+	$email = popLine ( $to_be_sended_path );
 	//--------------------------
 	// Do sending here
 	//--------------------------
@@ -115,8 +139,8 @@ if( $_GET['q'] == "send_mail" ){
 	//--------------------------
 	// Add to sended mails
 	//--------------------------
-	$path = $data_path . $id ."/". $posting ."/sended.txt";
-	addLine( $path, $email );
+	
+	addLine( $sended_path, $email );
 }
 
 
@@ -142,8 +166,9 @@ function removeLine( $path, $email ){
 		saveArrayToFile( $path, $lines );
 	}
 }
+
 function addLine( $path, $email ){
-	file_put_contents( $path, $email . "\n" , FILE_APPEND );
+	file_put_contents( $path, trim($email) . "\n" , FILE_APPEND );
 }
 
 function popLine ( $path ){
