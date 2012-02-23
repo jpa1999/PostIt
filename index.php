@@ -71,24 +71,19 @@ if( $_GET['q'] == "create_reminders" ){
 		reportError("Empty id");
 		exit("Empty ID!");
 	}
-	$reminders_registered_path = $data_path . $id ."/reminders_registered/to_be_sended.txt";
-	$reminders_not_registered_path = $data_path . $id ."/reminders_not_registered/to_be_sended.txt";
 	
-	$sended_path = $data_path . $id ."/invite/sended.txt";
-	$registered_path = $data_path . $id ."/registered/registered.txt";
+	$reminders_registered_path 		= $data_path . $id ."/reminders_registered/to_be_sended.txt";
+	$reminders_not_registered_path 	= $data_path . $id ."/reminders_not_registered/to_be_sended.txt";
+	$sended_path 					= $data_path . $id ."/invite/sended.txt";
+	$registered_path 				= $data_path . $id ."/registered/registered.txt";
 	
 	$sended = file( $sended_path, FILE_IGNORE_NEW_LINES );
 	$registered = file( $registered_path, FILE_IGNORE_NEW_LINES );
-	
-	print_r( $sended );
-	echo "---------------------";
-	print_r( $registered );
-	
+
 	$reminders_registered = array();
 	$reminders_not_registered = array();
 	
 	foreach( $sended as $sended_item ){
-		
 		$item = trim( $sended_item );
 		if( empty($item) ) continue;
 		
@@ -98,9 +93,6 @@ if( $_GET['q'] == "create_reminders" ){
 			array_push( $reminders_not_registered, $item."\n");
 		}
 	}
-	print_r( $reminders_registered );
-	echo "---------------------";
-	print_r( $reminders_not_registered );
 	
 	saveArrayToFile( $reminders_registered_path, $reminders_registered );
 	saveArrayToFile( $reminders_not_registered_path, $reminders_not_registered );
@@ -129,7 +121,10 @@ if( $_GET['q'] == "add_mail_to_invite" ){
 if( $_GET['q'] == "send_invite" ){
 	sendOneEmail( "invite" );
 }
-
+if( $_GET['q'] == "send_reminder" ){
+	sendOneEmail( "reminder_registered" );
+	sendOneEmail( "reminder_not_registered" );
+}
 
 //---------------------------
 // functions
@@ -161,6 +156,12 @@ function sendOneEmail( $posting_type ){
 	if( $posting_type =="invite" ){
 		$to_be_sended_path = $data_path . $id ."/invite/to_be_sended.txt";	
 		$sended_path = $data_path . $id ."/invite/sended.txt";
+	}else if( $posting_type =="reminder_registered" ){
+		$to_be_sended_path = $data_path . $id ."/reminders_registered/to_be_sended.txt";	
+		$sended_path = $data_path . $id ."/reminders_registered/sended.txt";
+	}else if( $posting_type =="reminder_not_registered" ){
+		$to_be_sended_path = $data_path . $id ."/reminders_not_registered/to_be_sended.txt";	
+		$sended_path = $data_path . $id ."/reminders_not_registered/sended.txt";
 	}else{
 		exit("Wrong posting type");
 	}
