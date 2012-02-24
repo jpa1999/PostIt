@@ -58,12 +58,20 @@ hr{
 	text-align:left;
 	position:relative;
 }
+.event_title{
+	background-color:#333;
+	color:white;
+	padding:20px;
+}
 
+.view{
+	padding:20px;
+}
 /*------------*/
 /* Navigation */
 /*------------*/
 .navigation{
-	background-color:#CCCCCC;
+	background-color:#333;
 	width:960px;
 }
 .navigation ul{
@@ -97,16 +105,17 @@ hr{
 	margin:0px;
 	
 	font-family:arial;
-	font-size:16px;
+	font-size:18px;
 	
-	margin-right:2px;
+	margin-right:3px;
 	margin-top:3px;
 }
 
 
 .selected_li{
-	background-color: black;
+	background-color: white !important;
 	font-size:22px;
+	color:black !important;
 }
 
 .navigation ul li a:hover{
