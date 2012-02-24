@@ -20,9 +20,12 @@ $reminders_not_registered_sended_path 		= $path . "/reminders_not_registered/sen
 $reminders_registered_to_be_sended_path 	= $path . "/reminders_registered/to_be_sended.txt";
 $reminders_registered_sended_path 			= $path . "/reminders_registered/sended.txt";
 //Poll invite
-$poll_sended_path 			= $path . "/poll/sended.txt";
-$poll_to_be_sended_path 	= $path . "/poll/to_be_sended.txt";
-
+$poll_sended_path 				= $path . "/poll/sended.txt";
+$poll_to_be_sended_path 		= $path . "/poll/to_be_sended.txt";
+// Dates
+$poll_date_path 				= $path . "/poll/date.txt";
+$reminders_registered_date_path = $path . "/reminders_registered/date.txt";
+$reminders_not_registered_date_path = $path . "/reminders_registered/date.txt";
 
 //--------------------------
 // Single add mail
@@ -39,9 +42,8 @@ if( $_GET['q'] == "remove_from_invite" ){
 if( $_GET['q'] == "send_invite" ){
 	
 	$sended_mail = sendOneEmail( $invite_to_be_sended_path, $invite_sended_path );
-	
 	if( !empty($sended_mail) ){
-		addLine(  $reminders_not_registered_to_be_sended_path, $email  );
+		addLine(  $reminders_not_registered_to_be_sended_path, $sended_mail  );
 	}
 }
 //--------------------------
@@ -53,8 +55,9 @@ if( $_GET['q'] == "register" ){
 	checkEmail( $email );
 	
 	addLine(  $register_registered_path, $email  );
-	if( dateNotGone("poll") ) addLine(  $poll_to_be_sended, $email  );
-	if( dateNotGone("registered") ) addLine(  $reminders_registered_to_be_sended_path, $email  );
+	if(  dateNotGone( $poll_date_path )  					) addLine(  $poll_to_be_sended_path, $email  );
+	if(  dateNotGone( $reminders_registered_date_path )  	) addLine(  $reminders_registered_to_be_sended_path, $email  );
+	
 	removeLine( $reminders_not_registered_to_be_sended_path, $email );
 
 }
@@ -180,9 +183,9 @@ function dateNotGone( $date_file ){
 	$date_string = file_get_contents( $date_file );
 	$timestamp = changeDatetimeToTime( $date_string );
 	
-	echo "Timestamp: " . $timestamp . " / " .  time();
+	echo "Timestamp: " . $timestamp . " / Current: " .  time();
 	
-	if( $timestamp < time() ){
+	if( $timestamp > time() ){
 		return true;	
 	}else{
 		return false;	
@@ -194,10 +197,11 @@ function changeDatetimeToTime( $date_fi ){
 	$time_explode 	= explode( ":", $space_explode[1] );
 		
 	print_r( "Date:" . $date_fi );
-	return mktime( $time_explode[0],$time_explode[1],0, $date_explode[1],$date_explode[0],$date_explode[2] );
+	return mktime( (int)$time_explode[0],(int)$time_explode[1],0, (int)$date_explode[1],(int)$date_explode[0],(int)$date_explode[2] );
 }
-
-//Lines
+//----------
+// Lines
+//----------
 function removeLine( $path, $email ){
 	
 	checkFile($path);
@@ -212,20 +216,17 @@ function removeLine( $path, $email ){
 		}
 	}
 	
-	if( $line_removed ){
-		echo "Save changed file";
-		saveArrayToFile( $path, $lines );
-	}
+	if( $line_removed ) saveArrayToFile( $path, $lines );
+	
 }
 
 function addLine( $path, $email ){
 	
 	checkFile($path);
-	checkEmail($email);
-	$file_array = file( $path );
-	if( !in_array( trim($email), $file_array ) ){
-		file_put_contents( $path, trim($email) . "\n" , FILE_APPEND );
-	}
+	checkEmail( trim($email) );
+	checkLineNotOnFile( $path, $email );
+	file_put_contents( $path, trim($email) . "\n" , FILE_APPEND );
+
 }
 
 function popLine ( $path ){
@@ -271,6 +272,16 @@ function cleanString( $string ){
 	return $string;
 }
 //---------------------------
+// Check if line exists
+//---------------------------
+function checkLineNotOnFile( $path, $line ){
+	$file_array = file( $path, FILE_IGNORE_NEW_LINES );
+	if( in_array( trim($line), $file_array ) ){
+		reportError("Line allready in file");
+		exit("Line allready in file");
+	}
+}
+//---------------------------
 // Check file
 //---------------------------
 function checkFile( $path ){
@@ -283,7 +294,7 @@ function checkFile( $path ){
 // Check email
 //---------------------------
 function checkEmail( $email ){
-	if( validEmail($email)){
+	if( !validEmail($email)){
 		reportError("Not valid email");
 		exit("Not valid email!");
 	}
