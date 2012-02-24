@@ -14,6 +14,7 @@ function initAplication(){
 
 var Application = function( parent ){
 		
+	this.id = 0
 	this.parent = parent
 	this.view = new MainView( this )
 	

@@ -18,13 +18,15 @@
 	<div class="wrapper">
 	<div class="container">
         
-        <div class="event list"></div>
-        <div class="event_item">
-            <form id="event_selection">
+        <div class="event_list">
+        	<form id="event_selection">
             	<select>
                 	<option>Valitse tapahtuma:</option>
                 </select>
             </form>
+        </div>
+        <div class="event_item">
+            
             <div class="event_title">Tapahtuman nimi ja numero</div>
             <div class="navigation">
             	<ul>
@@ -32,6 +34,7 @@
                     <li><a href="#reminders_not_registered" class="reminders_not_registered">Muistutus - rekisteröitymättömät</a></li>
                     <li><a href="#reminders_registered" class="reminders_registered">Muistutus - rekisteröityneet</a></li>
                     <li><a href="#polls" class="polls">Kysely</a></li>
+                    <li><a href="#errors" class="errors">Virheloki</a></li>
                 </ul>
                 <div class="clear"></div>
             </div>
@@ -91,7 +94,12 @@
                  </div>
             </div>
             <!------------------------------------------------->
-       
+        	<div id="errors" class="view errors">
+                <h1>Virhe loki</h1>
+                <pre></pre>
+            </div>
+            <!------------------------------------------------->
+            
             <script>
             $(function() {
                 $( "#invites_tabs" ).tabs();

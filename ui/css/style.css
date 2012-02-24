@@ -67,7 +67,14 @@ hr{
 	color:white;
 	padding:20px;
 }
-
+.event_list{
+	background-color:#333;
+	color:white;
+	padding:20px;
+}
+#event_selection select{
+	padding:12px;
+}
 .view{
 	padding:20px;
 }

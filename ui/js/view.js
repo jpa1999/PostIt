@@ -42,7 +42,7 @@ var MainView = function( model ){
 		this.hideEverything();
 		$("." +  hash_target ).show()
 
-		this.getLists( hash_target, hash_parameter )
+		this.getLists( hash_target, this.model.id )
 		
 		this.checkForErrors( hash_status, hash_parameter )
 		this.highlightNavi( hash_target )
@@ -53,6 +53,7 @@ var MainView = function( model ){
 		
 		var basepath = "../../data/" + id
 		
+		alert()
 		if( hash_target =="invites" ){
 			$("#invites_tabs .invites_to_be_sended pre").load( basepath + "/invite/to_be_sended.txt" );	
 			$("#invites_tabs .invites_sended pre").load( basepath + "/invite/sended.txt" );
@@ -70,6 +71,9 @@ var MainView = function( model ){
 			$("#polls_tabs .polls_to_be_sended pre").load( basepath + "/poll/to_be_sended.txt" );	
 			$("#polls_tabs .polls_sended pre").load( basepath + "/poll/sended.txt" );
 		}
+		if( hash_target =="errors" ){
+			$("#errors pre").load( "../../data/errors/errors.txt" );	
+		}
 		
 	}
 	
@@ -85,9 +89,14 @@ var MainView = function( model ){
 	}
 	
 	this.initButtons = function(){
-	
+		var main_view = this
+		$("#event_selection select").change( function( event ){ main_view.changeEvent() }  );
 	}
 	
+	this.changeEvent = function(){
+		this.model.id = $("#event_selection select").val()
+		window.location.hash = "invites-show-" + this.model.id;
+	}
 	this.populateEventDropDown = function( data ){
 		for( index in data.data ){
 			folder_id = data.data[ index ].dir_name

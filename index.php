@@ -33,11 +33,12 @@ $reminders_not_registered_date_path = $path . "/reminders_registered/date.txt";
 if( $_GET['q'] == "list_created_events" ){
 	
 	$json = '{ "data":[';
+	
 	if ($handle = opendir( $data_path )) {
 		/* This is the correct way to loop over the directory. */
     	while(  false !== ($entry = readdir($handle))  ){
        		$filetype = filetype( $data_path.$entry );
-			if( $filetype== "dir" && $entry!="." && $entry!=".." ){
+			if( $filetype== "dir" && $entry!="." && $entry!=".." && $entry!="errors" ){
 				$json .= '{"dir_name":"' . $entry . '"},';
 			}
     	}
@@ -45,6 +46,7 @@ if( $_GET['q'] == "list_created_events" ){
 	
 	$json = rtrim ( $json, "," );
 	$json .= "]}";
+	
 	echo $json;
 }
 //--------------------------
