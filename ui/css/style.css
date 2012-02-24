@@ -41,6 +41,10 @@ input{
 	border-radius: 3px;
 }
 
+pre{
+	font-size:12px;
+	line-height:17px;
+}
 hr{
 	border:none;
 	border-bottom: 1px solid black;

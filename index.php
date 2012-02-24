@@ -28,6 +28,26 @@ $reminders_registered_date_path = $path . "/reminders_registered/date.txt";
 $reminders_not_registered_date_path = $path . "/reminders_registered/date.txt";
 
 //--------------------------
+// List folders
+//---------------------------
+if( $_GET['q'] == "list_created_events" ){
+	
+	$json = '{ "data":[';
+	if ($handle = opendir( $data_path )) {
+		/* This is the correct way to loop over the directory. */
+    	while(  false !== ($entry = readdir($handle))  ){
+       		$filetype = filetype( $data_path.$entry );
+			if( $filetype== "dir" && $entry!="." && $entry!=".." ){
+				$json .= '{"dir_name":"' . $entry . '"},';
+			}
+    	}
+	}
+	
+	$json = rtrim ( $json, "," );
+	$json .= "]}";
+	echo $json;
+}
+//--------------------------
 // Single add mail
 //---------------------------
 if( $_GET['q'] == "add_to_invite" ){

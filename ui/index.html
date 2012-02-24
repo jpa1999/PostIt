@@ -20,7 +20,11 @@
         
         <div class="event list"></div>
         <div class="event_item">
-            
+            <form id="event_selection">
+            	<select>
+                	<option>Valitse tapahtuma:</option>
+                </select>
+            </form>
             <div class="event_title">Tapahtuman nimi ja numero</div>
             <div class="navigation">
             	<ul>
@@ -37,14 +41,14 @@
                 <h1>Kutsut</h1>
                 <div id="invites_tabs">
                         <ul>
-                            <li><a href="#to_be_sended">Lähtevät</a></li>
-                            <li><a href="#sended">Lähetetyt</a></li>
+                            <li><a href="#invites_to_be_sended">Lähtevät</a></li>
+                            <li><a href="#invites_sended">Lähetetyt</a></li>
                             <li><a href="#registered">Rekisteröityneet</a></li>
                         </ul>
                         
-                        <div id="to_be_sended"></div>
-                        <div id="sended"></div>
-                        <div id="registered"></div>
+                        <div id="invites_to_be_sended" class="invites_to_be_sended"><pre></pre></div>
+                        <div id="invites_sended" class="invites_sended"><pre></pre></div>
+                        <div id="registered" class="registered"><pre></pre></div>
                  </div>
             </div>
              <!------------------------------------------------->
@@ -52,12 +56,12 @@
                 <h1>Muistutukset rekisteröitymättömille</h1>
                 <div id="reminders_not_registered_tabs">
                         <ul>
-                            <li><a href="#to_be_sended">Lähtevät</a></li>
-                            <li><a href="#sended">Lähetetyt</a></li>
+                            <li><a href="#reminders_not_reg_to_be_sended">Lähtevät</a></li>
+                            <li><a href="#reminders_not_reg_sended">Lähetetyt</a></li>
                         </ul>
                         
-                        <div id="to_be_sended"></div>
-                        <div id="sended"></div>
+                        <div id="reminders_not_reg_to_be_sended" class="reminders_not_reg_to_be_sended"><pre></pre></div>
+                        <div id="reminders_not_reg_sended" class="reminders_not_reg_sended"><pre></pre></div>
                  </div>
             </div>
              <!------------------------------------------------->
@@ -65,12 +69,12 @@
                 <h1>Muistutukset jo rekisteröityneille</h1>
                 <div id="reminders_registered_tabs">
                         <ul>
-                            <li><a href="#to_be_sended">Lähtevät</a></li>
-                            <li><a href="#sended">Lähetetyt</a></li>
+                            <li><a href="#reminders_reg_to_be_sended">Lähtevät</a></li>
+                            <li><a href="#reminders_reg_sended">Lähetetyt</a></li>
                         </ul>
                         
-                        <div id="to_be_sended"></div>
-                        <div id="sended"></div>
+                        <div id="reminders_reg_to_be_sended" class="reminders_reg_to_be_sended"><pre></pre></div>
+                        <div id="reminders_reg_sended" class="reminders_reg_sended"><pre></pre></div>
                  </div>
             </div>
             <!------------------------------------------------->
@@ -78,12 +82,12 @@
                 <h1>Gallup kutsut</h1>
                 <div id="polls_tabs">
                         <ul>
-                            <li><a href="#to_be_sended">Lähtevät</a></li>
-                            <li><a href="#sended">Lähetetyt</a></li>
+                            <li><a href="#polls_to_be_sended">Lähtevät</a></li>
+                            <li><a href="#polls_sended">Lähetetyt</a></li>
                         </ul>
                         
-                        <div id="to_be_sended"></div>
-                        <div id="sended"></div>
+                        <div id="polls_to_be_sended" class="polls_to_be_sended"><pre></pre></div>
+                        <div id="polls_sended" class="polls_sended"><pre></pre></div>
                  </div>
             </div>
             <!------------------------------------------------->

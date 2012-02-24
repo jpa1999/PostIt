@@ -16,10 +16,17 @@ var Application = function( parent ){
 		
 	this.parent = parent
 	this.view = new MainView( this )
-	this.init = function(){}
+	
+	this.init = function(){
+		var application = this
+		$.getJSON( "../?q=list_created_events", 	function( data ){ 
+																	application.view.populateEventDropDown( data ) 
+																} )
+	}
 	
 	this.init()	
 }
+
 
 //------------------------------------
 // HASH
