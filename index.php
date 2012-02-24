@@ -25,10 +25,6 @@ if( $_GET['q'] == "add_new_event" ){
 		mkdir( $path . "/invite"  );
 		file_put_contents( $path . "/invite/sended.txt","" );
 		file_put_contents( $path . "/invite/to_be_sended.txt","" );
-		//Poll
-		mkdir( $path . "/poll"  );
-		file_put_contents( $path . "/poll/sended.txt","" );
-		file_put_contents( $path . "/poll/to_be_sended.txt","" );
 		//Registered
 		mkdir( $path . "/registered"  );
 		file_put_contents( $path . "/registered/registered.txt","" );
@@ -40,6 +36,11 @@ if( $_GET['q'] == "add_new_event" ){
 		mkdir( $path . "/reminders_registered"  );
 		file_put_contents( $path . "/reminders_registered/sended.txt","" );
 		file_put_contents( $path . "/reminders_registered/to_be_sended.txt","" );
+		//Poll
+		mkdir( $path . "/poll"  );
+		file_put_contents( $path . "/poll/sended.txt","" );
+		file_put_contents( $path . "/poll/to_be_sended.txt","" );
+		
 	}else{
 		exit( "No id!" );	
 	}
@@ -51,12 +52,14 @@ if( $_GET['q'] == "add_new_event" ){
 if( $_GET['q'] == "register" ){
 	
 	$path = $data_path . $id ."/registered/registered.txt";
-	if( !file_exists($path) ){
-		reportError("no such file");
-		exit("No such file!");
-	}
+	checkFile( $path );
+	
 	if( validEmail($email)){
 		addLine(  $path, $email  );
+		
+		//Move to reminders
+		// Add some checking for duplicate email
+		moveEmail( "/reminders_not_registered/to_be_sended.txt", "/poll/to_be_sended.txt" );
 	}else{
 		reportError("not valid email");
 		exit("Not valid email!");
@@ -129,6 +132,18 @@ if( $_GET['q'] == "send_reminder" ){
 //---------------------------
 // functions
 //---------------------------
+function moveEmail( $source, $target, $email ){
+	
+	if( file_exists($source) && file_exists($target) ){
+		$source_array = file( $source );
+		$target_array = file( $target );
+		
+		removeLine( $source, $email );
+		addLine( $target, $email );
+		
+	}
+}
+
 function addMail( $posting_type ){
 	
 	global $data_path;
@@ -187,8 +202,6 @@ function sendOneEmail( $posting_type ){
 
 function removeLine( $path, $email ){
 	
-	
-	
 	$line_removed = false;
 	$lines = file( $path, FILE_SKIP_EMPTY_LINES  );
 	
@@ -206,7 +219,10 @@ function removeLine( $path, $email ){
 }
 
 function addLine( $path, $email ){
-	file_put_contents( $path, trim($email) . "\n" , FILE_APPEND );
+	$file_array = file( $path );
+	if( !in_array( trim($email), $file_array ){
+		file_put_contents( $path, trim($email) . "\n" , FILE_APPEND );
+	}
 }
 
 function popLine ( $path ){
@@ -251,6 +267,16 @@ function cleanString( $string ){
 	//return mysql_real_escape_string($string, $database->yhteysnumero );	
 	return $string;
 }
+//---------------------------
+// Check file
+//---------------------------
+function checkFile( $path ){
+	if( !file_exists($path) ){
+		reportError("no such file");
+		exit("No such file!");
+	}
+}
+
 //---------------------------
 // Check email
 //---------------------------
