@@ -23,6 +23,55 @@ $reminders_registered_sended_path 			= $path . "/reminders_registered/sended.txt
 $poll_sended_path 			= $path . "/poll/sended.txt";
 $poll_to_be_sended_path 	= $path . "/poll/to_be_sended.txt";
 
+
+//--------------------------
+// Single add mail
+//---------------------------
+if( $_GET['q'] == "add_to_invite" ){
+	addLine(  $invite_to_be_sended_path, $email  );
+}
+if( $_GET['q'] == "remove_from_invite" ){
+	removeLine(  $invite_to_be_sended_path, $email  );
+}
+//-----------------------------
+// Send invite
+//-----------------------------
+if( $_GET['q'] == "send_invite" ){
+	
+	$sended_mail = sendOneEmail( $invite_to_be_sended_path, $invite_sended_path );
+	
+	if( !empty($sended_mail) ){
+		addLine(  $reminders_not_registered_to_be_sended_path, $email  );
+	}
+}
+//--------------------------
+// Register
+//---------------------------
+if( $_GET['q'] == "register" ){
+	
+	// CAN NON-INVITED REGISTER?
+	checkEmail( $email );
+	
+	addLine(  $register_registered_path, $email  );
+	if( dateNotGone("poll") ) addLine(  $poll_to_be_sended, $email  );
+	if( dateNotGone("registered") ) addLine(  $reminders_registered_to_be_sended_path, $email  );
+	removeLine( $reminders_not_registered_to_be_sended_path, $email );
+
+}
+//--------------------------
+// Send reminder
+//---------------------------
+if( $_GET['q'] == "send_reminder" ){
+	sendOneEmail( $reminders_registered_to_be_sended_path, $reminders_registered_sended_path );
+	sendOneEmail( $reminders_not_registered_to_be_sended_path, $reminders_not_registered_sended_path );
+}
+//--------------------------
+// Send Poll
+//---------------------------
+if( $_GET['q'] == "send_poll" ){
+	sendOneEmail( $poll_to_be_sended_path, $poll_sended_path );
+}
+
 //--------------------------
 // Create new event files
 //---------------------------
@@ -60,19 +109,7 @@ if( $_GET['q'] == "add_new_event" ){
 	}
 }
 
-//--------------------------
-// Register
-//---------------------------
-if( $_GET['q'] == "register" ){
-	
-	// CAN NON-INVITED REGISTER?
-	checkEmail( $email );
-	
-	addLine(  $register_registered_path, $email  );
-	addLine(  $poll_to_be_sended, $email  );
-	removeLine( $reminders_not_registered_to_be_sended_path, $email );
 
-}
 //--------------------------
 // Reminders not needed?
 //---------------------------
@@ -109,37 +146,6 @@ if( $_GET['q'] == "register" ){
 	saveArrayToFile( $reminders_not_registered_path, $reminders_not_registered );
 }*/
 
-//--------------------------
-// Single mail addresses
-//---------------------------
-if( $_GET['q'] == "remove_mail" ){
-	
-	$path = $data_path . $id ."/". $posting ."/". $state .".txt";
-	
-	if( validEmail($email) ){
-		echo "Tried to remove email: " . $email;
-		removeLine(  $path, $email  );
-	}else{
-		reportError("not valid email");
-	}
-}
-
-if( $_GET['q'] == "add_mail_to_invite" ){
-	addMail("invite");
-}
-
-
-
-if( $_GET['q'] == "send_invite" ){
-	sendOneEmail( $invite_to_be_sended_path, $invite_sended_path );
-}
-if( $_GET['q'] == "send_reminder" ){
-	sendOneEmail( $reminders_registered_to_be_sended_path, $reminders_registered_sended_path );
-	sendOneEmail( $reminders_not_registered_to_be_sended_path, $reminders_not_registered_sended_path );
-}
-if( $_GET['q'] == "send_poll" ){
-	sendOneEmail( $poll_to_be_sended_path, $poll_sended_path );
-}
 //---------------------------
 // functions
 //---------------------------
@@ -148,24 +154,6 @@ function moveEmail( $source, $target, $email ){
 	addLine( $target, $email );
 }
 
-function addMail( $posting_type ){
-	
-	global $data_path;
-	global $id;
-	global $email;
-	
-	if( $posting_type =="invite" ){
-		$path = $data_path . $id ."/invite/to_be_sended.txt";	
-	}else{
-		exit("Wrong posting type");
-	}
-	
-	if( validEmail($email) ){
-		addLine(  $path, $email  );
-	}else{
-		reportError("not valid email");
-	}
-}
 
 function sendOneEmail( $source_path, $sended_path ){
 	
@@ -178,16 +166,38 @@ function sendOneEmail( $source_path, $sended_path ){
 	//--------------------------
 	if( validEmail($email) ){
 		echo "Popped: " . $email;
+		// Add to sended mails
+		addLine( $sended_path, $email );
+		return ($email);
 	}else{
 		reportError("not valid email");
+		return("");
 	}
-	//--------------------------
-	// Add to sended mails
-	//--------------------------
-	addLine( $sended_path, $email );
 	
 }
+//Date
+function dateNotGone( $date_file ){
+	$date_string = file_get_contents( $date_file );
+	$timestamp = changeDatetimeToTime( $date_string );
+	
+	echo "Timestamp: " . $timestamp . " / " .  time();
+	
+	if( $timestamp < time() ){
+		return true;	
+	}else{
+		return false;	
+	}
+}
+function changeDatetimeToTime( $date_fi ){
+	$space_explode 	= explode( " ", $date_fi );
+	$date_explode 	= explode( ".", $space_explode[0] );
+	$time_explode 	= explode( ":", $space_explode[1] );
+		
+	print_r( "Date:" . $date_fi );
+	return mktime( $time_explode[0],$time_explode[1],0, $date_explode[1],$date_explode[0],$date_explode[2] );
+}
 
+//Lines
 function removeLine( $path, $email ){
 	
 	checkFile($path);
@@ -211,9 +221,9 @@ function removeLine( $path, $email ){
 function addLine( $path, $email ){
 	
 	checkFile($path);
-	
+	checkEmail($email);
 	$file_array = file( $path );
-	if( !in_array( trim($email), $file_array ){
+	if( !in_array( trim($email), $file_array ) ){
 		file_put_contents( $path, trim($email) . "\n" , FILE_APPEND );
 	}
 }
