@@ -6,6 +6,22 @@ $state 		= cleanString( $_GET['state'] );
 $email 		= cleanString( $_GET['email'] );
 $q 			= cleanString( $_GET['q'] );
 
+$path = $data_path . $id;
+
+//Invite
+$invite_sended_path 		= $path . "/invite/sended.txt";
+$invite_to_be_sended_path 	= $path . "/invite/to_be_sended.txt";
+//Register
+$register_registered_path 	= $path . "/registered/registered.txt";
+//Reminders for not registered
+$reminders_not_registered_to_be_sended_path = $path . "/reminders_not_registered/to_be_sended.txt";
+$reminders_not_registered_sended_path 		= $path . "/reminders_not_registered/sended.txt";
+//Reminders for registered
+$reminders_registered_to_be_sended_path 	= $path . "/reminders_registered/to_be_sended.txt";
+$reminders_registered_sended_path 			= $path . "/reminders_registered/sended.txt";
+//Poll invite
+$poll_sended_path 			= $path . "/poll/sended.txt";
+$poll_to_be_sended_path 	= $path . "/poll/to_be_sended.txt";
 
 //--------------------------
 // Create new event files
@@ -14,8 +30,6 @@ if( $_GET['q'] == "add_new_event" ){
 	
 	if( !empty( $id ) ){
 		
-		$path = $data_path . $id;
-		
 		if( file_exists ( $path ) ){
 			exit( "Folder allready exists!" );
 		}
@@ -23,23 +37,23 @@ if( $_GET['q'] == "add_new_event" ){
 		mkdir( $path );
 		//Invite
 		mkdir( $path . "/invite"  );
-		file_put_contents( $path . "/invite/sended.txt","" );
-		file_put_contents( $path . "/invite/to_be_sended.txt","" );
+		file_put_contents( $invite_sended_path, "" );
+		file_put_contents( $invite_to_be_sended_path, "" );
 		//Registered
 		mkdir( $path . "/registered"  );
-		file_put_contents( $path . "/registered/registered.txt","" );
+		file_put_contents( $register_registered_path, "" );
 		//Reminder not registered
 		mkdir( $path . "/reminders_not_registered"  );
-		file_put_contents( $path . "/reminders_not_registered/sended.txt","" );
-		file_put_contents( $path . "/reminders_not_registered/to_be_sended.txt","" );
+		file_put_contents( $reminders_not_registered_sended_path, "" );
+		file_put_contents( $reminders_not_registered_to_be_sended_path , "" );
 		//Reminder registered
 		mkdir( $path . "/reminders_registered"  );
-		file_put_contents( $path . "/reminders_registered/sended.txt","" );
-		file_put_contents( $path . "/reminders_registered/to_be_sended.txt","" );
+		file_put_contents( $reminders_not_registered_sended_path, "" );
+		file_put_contents( $reminders_not_registered_to_be_sended_path, "" );
 		//Poll
 		mkdir( $path . "/poll"  );
-		file_put_contents( $path . "/poll/sended.txt","" );
-		file_put_contents( $path . "/poll/to_be_sended.txt","" );
+		file_put_contents( $poll_sended_path, "" );
+		file_put_contents( $poll_to_be_sended_path, "" );
 		
 	}else{
 		exit( "No id!" );	
@@ -51,24 +65,18 @@ if( $_GET['q'] == "add_new_event" ){
 //---------------------------
 if( $_GET['q'] == "register" ){
 	
-	$path = $data_path . $id ."/registered/registered.txt";
-	checkFile( $path );
+	// CAN NON-INVITED REGISTER?
+	checkEmail( $email );
 	
-	if( validEmail($email)){
-		addLine(  $path, $email  );
-		
-		//Move to reminders
-		// Add some checking for duplicate email
-		moveEmail( "/reminders_not_registered/to_be_sended.txt", "/poll/to_be_sended.txt" );
-	}else{
-		reportError("not valid email");
-		exit("Not valid email!");
-	}
+	addLine(  $register_registered_path, $email  );
+	addLine(  $poll_to_be_sended, $email  );
+	removeLine( $reminders_not_registered_to_be_sended_path, $email );
+
 }
 //--------------------------
-// Reminders
+// Reminders not needed?
 //---------------------------
-if( $_GET['q'] == "create_reminders" ){
+/*if( $_GET['q'] == "create_reminders" ){
 	
 	if( empty($id) ){
 		reportError("Empty id");
@@ -99,7 +107,8 @@ if( $_GET['q'] == "create_reminders" ){
 	
 	saveArrayToFile( $reminders_registered_path, $reminders_registered );
 	saveArrayToFile( $reminders_not_registered_path, $reminders_not_registered );
-}
+}*/
+
 //--------------------------
 // Single mail addresses
 //---------------------------
@@ -122,26 +131,21 @@ if( $_GET['q'] == "add_mail_to_invite" ){
 
 
 if( $_GET['q'] == "send_invite" ){
-	sendOneEmail( "invite" );
+	sendOneEmail( $invite_to_be_sended_path, $invite_sended_path );
 }
 if( $_GET['q'] == "send_reminder" ){
-	sendOneEmail( "reminder_registered" );
-	sendOneEmail( "reminder_not_registered" );
+	sendOneEmail( $reminders_registered_to_be_sended_path, $reminders_registered_sended_path );
+	sendOneEmail( $reminders_not_registered_to_be_sended_path, $reminders_not_registered_sended_path );
 }
-
+if( $_GET['q'] == "send_poll" ){
+	sendOneEmail( $poll_to_be_sended_path, $poll_sended_path );
+}
 //---------------------------
 // functions
 //---------------------------
 function moveEmail( $source, $target, $email ){
-	
-	if( file_exists($source) && file_exists($target) ){
-		$source_array = file( $source );
-		$target_array = file( $target );
-		
-		removeLine( $source, $email );
-		addLine( $target, $email );
-		
-	}
+	removeLine( $source, $email );
+	addLine( $target, $email );
 }
 
 function addMail( $posting_type ){
@@ -163,28 +167,12 @@ function addMail( $posting_type ){
 	}
 }
 
-function sendOneEmail( $posting_type ){
+function sendOneEmail( $source_path, $sended_path ){
 	
-	global $id;
-	global $data_path;
-	
-	if( $posting_type =="invite" ){
-		$to_be_sended_path = $data_path . $id ."/invite/to_be_sended.txt";	
-		$sended_path = $data_path . $id ."/invite/sended.txt";
-	}else if( $posting_type =="reminder_registered" ){
-		$to_be_sended_path = $data_path . $id ."/reminders_registered/to_be_sended.txt";	
-		$sended_path = $data_path . $id ."/reminders_registered/sended.txt";
-	}else if( $posting_type =="reminder_not_registered" ){
-		$to_be_sended_path = $data_path . $id ."/reminders_not_registered/to_be_sended.txt";	
-		$sended_path = $data_path . $id ."/reminders_not_registered/sended.txt";
-	}else{
-		exit("Wrong posting type");
-	}
 	//-------------------------
 	// Get next line
 	//-------------------------
-	
-	$email = popLine ( $to_be_sended_path );
+	$email = popLine ( $source_path );
 	//--------------------------
 	// Do sending here
 	//--------------------------
@@ -196,11 +184,13 @@ function sendOneEmail( $posting_type ){
 	//--------------------------
 	// Add to sended mails
 	//--------------------------
-	
 	addLine( $sended_path, $email );
+	
 }
 
 function removeLine( $path, $email ){
+	
+	checkFile($path);
 	
 	$line_removed = false;
 	$lines = file( $path, FILE_SKIP_EMPTY_LINES  );
@@ -219,6 +209,9 @@ function removeLine( $path, $email ){
 }
 
 function addLine( $path, $email ){
+	
+	checkFile($path);
+	
 	$file_array = file( $path );
 	if( !in_array( trim($email), $file_array ){
 		file_put_contents( $path, trim($email) . "\n" , FILE_APPEND );
@@ -276,7 +269,15 @@ function checkFile( $path ){
 		exit("No such file!");
 	}
 }
-
+//---------------------------
+// Check email
+//---------------------------
+function checkEmail( $email ){
+	if( validEmail($email)){
+		reportError("Not valid email");
+		exit("Not valid email!");
+	}
+}
 //---------------------------
 // Check email
 //---------------------------
