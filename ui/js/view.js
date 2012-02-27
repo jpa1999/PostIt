@@ -95,20 +95,23 @@ var MainView = function( model ){
 			$("#invites_tabs .invites_sended pre").load( basepath + "/invite/sended.txt" + random_string )
 			$("#invites_tabs .registered pre").load( basepath + "/registered/registered.txt" + random_string )
 			$("#invites_tabs .unregistered pre").load( unregistered_path );
-			
 			this.loadDate( "invites", id )
 		}
 		if( hash_target =="reminders_registered" ){
 			$("#reminders_registered_tabs .reminders_reg_to_be_sended pre").load( basepath + "/reminders_registered/to_be_sended.txt" + random_string );	
 			$("#reminders_registered_tabs .reminders_reg_sended pre").load( basepath + "/reminders_registered/sended.txt" + random_string );
+			this.loadDate( "reminders_registered", id )
 		}
 		if( hash_target =="reminders_not_registered" ){
 			$("#reminders_not_registered_tabs .reminders_not_reg_to_be_sended pre").load( basepath + "/reminders_not_registered/to_be_sended.txt" + random_string );	
 			$("#reminders_not_registered_tabs .reminders_not_reg_sended pre").load( basepath + "/reminders_not_registered/sended.txt" + random_string );
+			this.loadDate( "reminders_not_registered", id )
 		}
 		if( hash_target =="polls" ){
 			$("#polls_tabs .polls_to_be_sended pre").load( basepath + "/poll/to_be_sended.txt" + random_string );	
 			$("#polls_tabs .polls_sended pre").load( basepath + "/poll/sended.txt" + random_string );
+			
+			this.loadDate( "polls", id )
 		}
 		if( hash_target =="errors" ){
 			$("#errors pre").load( "../../data/errors/errors.txt" );	
@@ -123,8 +126,6 @@ var MainView = function( model ){
 	
 		$('#' + hash_target + '_date').datetimepicker( {
    										onClose: function(dateText, inst) { 
-												alert("hep!")
-												alert( dateText )
 												$.get("../?q=set_date&id=" + id + "&date=" +dateText+ "&posting=" + hash_target) 
 										}
 									} );

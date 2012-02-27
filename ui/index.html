@@ -95,7 +95,10 @@
                         </ul>
                         
                         <div id="reminders_not_reg_to_be_sended" class="reminders_not_reg_to_be_sended">
-                        	Muistutuksen lähetysaika rekisteröitymättömille: <input type="text" name="invites_date" id="reminders_not_registered_date"  class="date"/>
+                        	<!-- SEND DATE -->
+                       		<div class="box">
+                            	Muistutuksen lähetysaika rekisteröitymättömille: <input type="text" name="invites_date" id="reminders_not_registered_date"  class="date"/>
+                            </div>
                             <pre></pre>
                         </div>
                         <div id="reminders_not_reg_sended" class="reminders_not_reg_sended"><pre></pre></div>
@@ -110,10 +113,14 @@
                             <li><a href="#reminders_reg_sended">Lähetetyt</a></li>
                         </ul>
                         
-                        <div id="reminders_reg_to_be_sended" class="reminders_reg_to_be_sended">
-                        	Muistutuksen lähetysaika rekisteröityneille: <input type="text" name="invites_date" id="reminders_registered_date" class="date"/>
+                         <div id="reminders_reg_to_be_sended" class="reminders_reg_to_be_sended">
+                         	<!-- SEND DATE -->
+                       		<div class="box">
+                        		Muistutuksen lähetysaika rekisteröityneille: <input type="text" name="invites_date" id="reminders_registered_date" class="date"/>
+                            </div>
                         	<pre></pre>
                         </div>
+                        
                         <div id="reminders_reg_sended" class="reminders_reg_sended"><pre></pre></div>
                  </div>
             </div>
@@ -125,8 +132,14 @@
                             <li><a href="#polls_to_be_sended">Lähtevät</a></li>
                             <li><a href="#polls_sended">Lähetetyt</a></li>
                         </ul>
-                        
-                        <div id="polls_to_be_sended" class="polls_to_be_sended"><pre></pre></div>
+                        <div id="polls_to_be_sended" class="polls_to_be_sended">
+                        	 <!-- SEND DATE -->
+                            <div class="box">
+                                Gallup kutusujen lähetysaika: <input type="text" name="polls_date" id="polls_date"  class="date"/>
+                            </div>
+                            
+                            <pre></pre>
+                        </div>
                         <div id="polls_sended" class="polls_sended"><pre></pre></div>
                  </div>
             </div>
