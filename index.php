@@ -29,7 +29,37 @@ $poll_to_be_sended_path 		= $path . "/poll/to_be_sended.txt";
 $poll_date_path 				= $path . "/poll/date.txt";
 $reminders_registered_date_path = $path . "/reminders_registered/date.txt";
 $reminders_not_registered_date_path = $path . "/reminders_registered/date.txt";
-
+//--------------------------
+// Dates
+//---------------------------
+if( $_GET['q'] == "get_date" ){
+	if( $posting == "invites" ){
+		echo( timeToDatetime( file_get_contents( $invite_date_path )) );
+	}
+	if( $posting == "reminders_not_registered" ){
+		echo( timeToDatetime( file_get_contents( $reminders_not_registered_date_path )) );
+	}
+	if( $posting == "reminders_registered" ){
+		echo( timeToDatetime( file_get_contents( $reminders_registered_date_path )) );
+	}
+	if( $posting == "polls" ){
+		echo( timeToDatetime( file_get_contents( $polls_date_path )) );
+	}
+}
+if( $_GET['q'] == "set_date" ){
+	if( $posting == "invites" ){
+		echo( timeToDatetime( file_get_contents( $invite_date_path )) );
+	}
+	if( $posting == "reminders_not_registered" ){
+		echo( timeToDatetime( file_get_contents( $reminders_not_registered_date_path )) );
+	}
+	if( $posting == "reminders_registered" ){
+		echo( timeToDatetime( file_get_contents( $reminders_registered_date_path )) );
+	}
+	if( $posting == "polls" ){
+		echo( timeToDatetime( file_get_contents( $polls_date_path )) );
+	}	
+}
 //--------------------------
 // List folders
 //---------------------------
@@ -222,6 +252,7 @@ function sendOneEmail( $source_path, $sended_path ){
 	
 }
 //Date
+
 function dateNotGone( $date_file ){
 	$date_string = file_get_contents( $date_file );
 	$timestamp = changeDatetimeToTime( $date_string );
@@ -238,10 +269,10 @@ function changeDatetimeToTime( $date_fi ){
 	$space_explode 	= explode( " ", $date_fi );
 	$date_explode 	= explode( ".", $space_explode[0] );
 	$time_explode 	= explode( ":", $space_explode[1] );
-		
-	print_r( "Date:" . $date_fi );
 	return mktime( (int)$time_explode[0],(int)$time_explode[1],0, (int)$date_explode[1],(int)$date_explode[0],(int)$date_explode[2] );
 }
+
+
 //----------
 // Lines
 //----------
