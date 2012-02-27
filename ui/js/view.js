@@ -28,6 +28,7 @@ var MainView = function( model ){
 	
 	this.hideEverything = function(){
 		$(".view").hide()	
+		
 	}
 	
 	this.show = function( hash ){
@@ -42,8 +43,18 @@ var MainView = function( model ){
 		this.hideEverything();
 		$("." +  hash_target ).show()
 
-		this.getLists( hash_target, this.model.id )
+		if( hash != "etusivu" ){
+			
+			this.getLists( hash_target, this.model.id )
+			this.getDates( hash_target, this.model.id )
+			
+			$(".navigation ul").show()
+			$(".event_title").show()
 		
+		}else{
+			$(".navigation ul").hide()
+			$(".event_title").hide()
+		}
 		this.checkForErrors( hash_status, hash_parameter )
 		this.highlightNavi( hash_target )
 		
@@ -53,7 +64,6 @@ var MainView = function( model ){
 		
 		var basepath = "../../data/" + id
 		
-		alert()
 		if( hash_target =="invites" ){
 			$("#invites_tabs .invites_to_be_sended pre").load( basepath + "/invite/to_be_sended.txt" );	
 			$("#invites_tabs .invites_sended pre").load( basepath + "/invite/sended.txt" );
@@ -75,6 +85,11 @@ var MainView = function( model ){
 			$("#errors pre").load( "../../data/errors/errors.txt" );	
 		}
 		
+	}
+	
+	this.getDates = function( hash_target, id ){
+		$.datepicker.setDefaults( $.datepicker.regional[ "fi" ] );
+		$('#' + hash_target + '_date').datetimepicker( $.datepicker.regional[ "fi" ]  );
 	}
 	
 	this.highlightNavi = function( target ){

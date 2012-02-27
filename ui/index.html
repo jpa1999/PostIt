@@ -3,15 +3,24 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
      <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/themes/smoothness/jquery-ui.css" />
+    
      
      <link rel="stylesheet" type="text/css" href="css/normalize.css" />
 	 <link rel="stylesheet" href="css/style.css">
-	
+     
+	 <link rel="stylesheet" type="text/css" href="css/jquery-ui-timepicker-addon.css" />
+     
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/jquery.ba-hashchange.min.js"></script>
     
-    <script type="text/javascript" src="js/view.js"></script> 
+	<script type="text/javascript" src="http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-fi.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-timepicker-fi.js"></script>
+
+	
+    
+	<script type="text/javascript" src="js/view.js"></script> 
 	<script type="text/javascript" src="js/main.js"></script> 
 </head>
 <body>
@@ -49,7 +58,10 @@
                             <li><a href="#registered">Rekisteröityneet</a></li>
                         </ul>
                         
-                        <div id="invites_to_be_sended" class="invites_to_be_sended"><pre></pre></div>
+                        <div id="invites_to_be_sended" class="invites_to_be_sended">
+                        	Kutsujen lähetysaika: <input type="text" name="invites_date" id="invites_date"  class="date"/>
+                            <pre></pre>
+                        </div>
                         <div id="invites_sended" class="invites_sended"><pre></pre></div>
                         <div id="registered" class="registered"><pre></pre></div>
                  </div>
@@ -63,7 +75,10 @@
                             <li><a href="#reminders_not_reg_sended">Lähetetyt</a></li>
                         </ul>
                         
-                        <div id="reminders_not_reg_to_be_sended" class="reminders_not_reg_to_be_sended"><pre></pre></div>
+                        <div id="reminders_not_reg_to_be_sended" class="reminders_not_reg_to_be_sended">
+                        	Muistutuksen lähetysaika rekisteröitymättömille: <input type="text" name="invites_date" id="reminders_not_registered_date"  class="date"/>
+                            <pre></pre>
+                        </div>
                         <div id="reminders_not_reg_sended" class="reminders_not_reg_sended"><pre></pre></div>
                  </div>
             </div>
@@ -76,7 +91,10 @@
                             <li><a href="#reminders_reg_sended">Lähetetyt</a></li>
                         </ul>
                         
-                        <div id="reminders_reg_to_be_sended" class="reminders_reg_to_be_sended"><pre></pre></div>
+                        <div id="reminders_reg_to_be_sended" class="reminders_reg_to_be_sended">
+                        	Muistutuksen lähetysaika rekisteröityneille: <input type="text" name="invites_date" id="reminders_registered_date" class="date"/>
+                        	<pre></pre>
+                        </div>
                         <div id="reminders_reg_sended" class="reminders_reg_sended"><pre></pre></div>
                  </div>
             </div>

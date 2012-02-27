@@ -139,6 +139,9 @@ hr{
 }
 
 /*-----------------------------------------------*/
+input.date{
+	font-size:12px;
+}
 
 .hidden{
 	display:none;
