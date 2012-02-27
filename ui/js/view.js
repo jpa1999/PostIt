@@ -40,6 +40,10 @@ var MainView = function( model ){
 		var hash_status 	= hash_array[1]
 		var hash_parameter 	= hash_array[2]
 
+		if( hash_parameter ){
+			this.model.updateID( hash_parameter )	
+		}
+		
 		this.hideEverything();
 		$("." +  hash_target ).show()
 
@@ -47,6 +51,7 @@ var MainView = function( model ){
 			
 			this.getLists( hash_target, this.model.id )
 			this.getDates( hash_target, this.model.id )
+			this.initRegisterForm( hash_target, this.model.id )
 			
 			$(".navigation ul").show()
 			$(".event_title").show()
@@ -60,26 +65,46 @@ var MainView = function( model ){
 		
 	}
 	
+	this.initRegisterForm = function( hash_target, id ){
+		parent = this
+		if( hash_target =="invites" ){
+			$(".register button").click( function(){ parent.sendRegister( hash_target, id ) } )	
+			$(".invite_add_email button").click( function(){ parent.addEmail( hash_target, id ) } )	
+			$(".send_one_invite button").click( function(){ parent.sendInvite( hash_target, id ) } )	
+		}
+	}
+	this.addEmail = function ( hash_target, id){
+		$.get( "..\?q=add_to_invite&id=" +id+ "&email=" + $(".invite_add_email .email").val(),{}, function(){ window.location.reload() }  )
+		//window.location.reload()
+	}
+	this.sendRegister = function ( hash_target, id){
+		$.get( "..\?q=register&id=" +id+ "&email=" + $(".register .register_email").val(),{}, function(){ window.location.reload() }  )
+	}
+	this.sendInvite = function ( hash_target, id){
+		$.get( "..\?q=send_invite&id=" + id,{}, function(){ window.location.reload() }  )
+	}
+	
 	this.getLists = function( hash_target, id ){
 		
 		var basepath = "../../data/" + id
+		var random_string = "?rand=" + Math.random()
 		
 		if( hash_target =="invites" ){
-			$("#invites_tabs .invites_to_be_sended pre").load( basepath + "/invite/to_be_sended.txt" );	
-			$("#invites_tabs .invites_sended pre").load( basepath + "/invite/sended.txt" );
-			$("#invites_tabs .registered pre").load( basepath + "/registered/registered.txt" );
+			$("#invites_tabs .invites_to_be_sended pre").load( basepath + "/invite/to_be_sended.txt" + random_string );	
+			$("#invites_tabs .invites_sended pre").load( basepath + "/invite/sended.txt" + random_string );
+			$("#invites_tabs .registered pre").load( basepath + "/registered/registered.txt" + random_string );
 		}
 		if( hash_target =="reminders_registered" ){
-			$("#reminders_registered_tabs .reminders_reg_to_be_sended pre").load( basepath + "/reminders_registered/to_be_sended.txt" );	
-			$("#reminders_registered_tabs .reminders_reg_sended pre").load( basepath + "/reminders_registered/sended.txt" );
+			$("#reminders_registered_tabs .reminders_reg_to_be_sended pre").load( basepath + "/reminders_registered/to_be_sended.txt" + random_string );	
+			$("#reminders_registered_tabs .reminders_reg_sended pre").load( basepath + "/reminders_registered/sended.txt" + random_string );
 		}
 		if( hash_target =="reminders_not_registered" ){
-			$("#reminders_not_registered_tabs .reminders_not_reg_to_be_sended pre").load( basepath + "/reminders_not_registered/to_be_sended.txt" );	
-			$("#reminders_not_registered_tabs .reminders_not_reg_sended pre").load( basepath + "/reminders_not_registered/sended.txt" );
+			$("#reminders_not_registered_tabs .reminders_not_reg_to_be_sended pre").load( basepath + "/reminders_not_registered/to_be_sended.txt" + random_string );	
+			$("#reminders_not_registered_tabs .reminders_not_reg_sended pre").load( basepath + "/reminders_not_registered/sended.txt" + random_string );
 		}
 		if( hash_target =="polls" ){
-			$("#polls_tabs .polls_to_be_sended pre").load( basepath + "/poll/to_be_sended.txt" );	
-			$("#polls_tabs .polls_sended pre").load( basepath + "/poll/sended.txt" );
+			$("#polls_tabs .polls_to_be_sended pre").load( basepath + "/poll/to_be_sended.txt" + random_string );	
+			$("#polls_tabs .polls_sended pre").load( basepath + "/poll/sended.txt" + random_string );
 		}
 		if( hash_target =="errors" ){
 			$("#errors pre").load( "../../data/errors/errors.txt" );	
@@ -109,7 +134,7 @@ var MainView = function( model ){
 	}
 	
 	this.changeEvent = function(){
-		this.model.id = $("#event_selection select").val()
+		this.model.updateID( $("#event_selection select").val() )
 		window.location.hash = "invites-show-" + this.model.id;
 	}
 	this.populateEventDropDown = function( data ){

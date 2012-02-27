@@ -15,19 +15,23 @@ function initAplication(){
 var Application = function( parent ){
 		
 	this.id = 0
-	this.parent = parent
-	this.view = new MainView( this )
+	
 	
 	this.init = function(){
 		var application = this
-		$.getJSON( "../?q=list_created_events", 	function( data ){ 
-																	application.view.populateEventDropDown( data ) 
-																} )
+		$.getJSON( "../?q=list_created_events",   function( data ){ 
+														application.view.populateEventDropDown( data ) 
+													})
+		this.parent = parent
+		this.view = new MainView( this )
+	}
+	
+	this.updateID = function( id ){
+		this.id = id
 	}
 	
 	this.init()	
 }
-
 
 //------------------------------------
 // HASH

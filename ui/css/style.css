@@ -139,6 +139,12 @@ hr{
 }
 
 /*-----------------------------------------------*/
+.box{
+	border: 1px solid grey;
+	padding:20px;
+	margin:10px;
+}
+
 input.date{
 	font-size:12px;
 }

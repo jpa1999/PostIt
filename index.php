@@ -9,14 +9,17 @@ $q 			= cleanString( $_GET['q'] );
 $path = $data_path . $id;
 
 //Invite
+$invite_date_path 		= $path . "/invite/date.txt";
 $invite_sended_path 		= $path . "/invite/sended.txt";
 $invite_to_be_sended_path 	= $path . "/invite/to_be_sended.txt";
 //Register
 $register_registered_path 	= $path . "/registered/registered.txt";
 //Reminders for not registered
+$reminders_not_registered_date_path . "/reminders_not_registered/date.txt";
 $reminders_not_registered_to_be_sended_path = $path . "/reminders_not_registered/to_be_sended.txt";
 $reminders_not_registered_sended_path 		= $path . "/reminders_not_registered/sended.txt";
 //Reminders for registered
+$reminders_registered_date_path . "/reminders_registered/date.txt";
 $reminders_registered_to_be_sended_path 	= $path . "/reminders_registered/to_be_sended.txt";
 $reminders_registered_sended_path 			= $path . "/reminders_registered/sended.txt";
 //Poll invite
@@ -111,6 +114,7 @@ if( $_GET['q'] == "add_new_event" ){
 		mkdir( $path );
 		//Invite
 		mkdir( $path . "/invite"  );
+		file_put_contents( $invite_date_path, "" );
 		file_put_contents( $invite_sended_path, "" );
 		file_put_contents( $invite_to_be_sended_path, "" );
 		//Registered
@@ -118,12 +122,14 @@ if( $_GET['q'] == "add_new_event" ){
 		file_put_contents( $register_registered_path, "" );
 		//Reminder not registered
 		mkdir( $path . "/reminders_not_registered"  );
+		file_put_contents( $reminders_not_registered_date_path, "" );
 		file_put_contents( $reminders_not_registered_sended_path, "" );
 		file_put_contents( $reminders_not_registered_to_be_sended_path , "" );
 		//Reminder registered
 		mkdir( $path . "/reminders_registered"  );
-		file_put_contents( $reminders_not_registered_sended_path, "" );
-		file_put_contents( $reminders_not_registered_to_be_sended_path, "" );
+		file_put_contents( $reminders_registered_date_path, "" );
+		file_put_contents( $reminders_registered_sended_path, "" );
+		file_put_contents( $reminders_registered_to_be_sended_path, "" );
 		//Poll
 		mkdir( $path . "/poll"  );
 		file_put_contents( $poll_sended_path, "" );

@@ -59,7 +59,24 @@
                         </ul>
                         
                         <div id="invites_to_be_sended" class="invites_to_be_sended">
-                        	Kutsujen lähetysaika: <input type="text" name="invites_date" id="invites_date"  class="date"/>
+                        
+                        	<!-- SEND DATE -->
+                            <div class="box">
+                        		Kutsujen lähetysaika: <input type="text" name="invites_date" id="invites_date"  class="date"/>
+                            </div>
+                            <!-- Register -->
+                            <div class="invite_add_email box">
+                            	Lisää sähköpostiosoite kutsuttuihin:<input type="text" name="email" id="email"  class="email"/> <button>Lisää</button>
+                            </div>
+                            <!-- Register email-->
+                            <div class="register box">
+                            	Rekisteröi sähköpostiosoite: <input type="text" name="email" id="register_email"  class="register_email"/> <button>Lähetä</button>
+                            </div>
+                             <!-- Send one email-->
+                            <div class="send_one_invite box">
+                            	<button>Lähetä yksi email</button>
+                            </div>
+                            
                             <pre></pre>
                         </div>
                         <div id="invites_sended" class="invites_sended"><pre></pre></div>
