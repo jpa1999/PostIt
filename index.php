@@ -9,7 +9,7 @@ $q 			= cleanString( $_GET['q'] );
 $path = $data_path . $id;
 
 //Invite
-$invite_date_path 		= $path . "/invite/date.txt";
+$invite_date_path 			= $path . "/invite/date.txt";
 $invite_sended_path 		= $path . "/invite/sended.txt";
 $invite_to_be_sended_path 	= $path . "/invite/to_be_sended.txt";
 //Register
@@ -99,7 +99,22 @@ if( $_GET['q'] == "send_reminder" ){
 if( $_GET['q'] == "send_poll" ){
 	sendOneEmail( $poll_to_be_sended_path, $poll_sended_path );
 }
+//--------------------------
+// Get unregistered lis
+//---------------------------
+if( $_GET['q'] == "list_unregistered" ){
 
+	$unregistered_array = array_diff (
+				array_merge ( 
+						file( $invite_to_be_sended_path, 	FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ), 
+						file( $invite_sended_path, 			FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ) 
+				), 
+				file( $register_registered_path, 			FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ) 
+			
+			);
+	echo implode( "\n",$unregistered_array );
+	
+}
 //--------------------------
 // Create new event files
 //---------------------------

@@ -87,12 +87,14 @@ var MainView = function( model ){
 	this.getLists = function( hash_target, id ){
 		
 		var basepath = "../../data/" + id
+		var unregistered_path = "../?q=list_unregistered&id=" + id
 		var random_string = "?rand=" + Math.random()
 		
 		if( hash_target =="invites" ){
 			$("#invites_tabs .invites_to_be_sended pre").load( basepath + "/invite/to_be_sended.txt" + random_string );	
 			$("#invites_tabs .invites_sended pre").load( basepath + "/invite/sended.txt" + random_string );
 			$("#invites_tabs .registered pre").load( basepath + "/registered/registered.txt" + random_string );
+			$("#invites_tabs .unregistered pre").load( unregistered_path );
 		}
 		if( hash_target =="reminders_registered" ){
 			$("#reminders_registered_tabs .reminders_reg_to_be_sended pre").load( basepath + "/reminders_registered/to_be_sended.txt" + random_string );	
@@ -113,8 +115,19 @@ var MainView = function( model ){
 	}
 	
 	this.getDates = function( hash_target, id ){
+		parent = this
 		$.datepicker.setDefaults( $.datepicker.regional[ "fi" ] );
-		$('#' + hash_target + '_date').datetimepicker( $.datepicker.regional[ "fi" ]  );
+		//$('#' + hash_target + '_date').datetimepicker( $.datepicker.regional[ "fi" ]  );
+	
+		$('#' + hash_target + '_date').datetimepicker( {
+   										onClose: function(dateText, inst) { 
+												$.get("../?q=set_date&id=" + id + "&date=" +dateText+ "&category=" + hash_target) 
+										}
+									} );
+	}
+	this.loadDate = function( hash_target, id ){
+			$.get("../?q=get_date&id=" + id + "&category=" + hash_target,{}, function( data ){ $('#' + hash_target + '_date').val( data ) }) 
+			
 	}
 	
 	this.highlightNavi = function( target ){
