@@ -71,17 +71,35 @@ var MainView = function( model ){
 			$(".register button").click( function(){ parent.sendRegister( hash_target, id ) } )	
 			$(".invite_add_email button").click( function(){ parent.addEmail( hash_target, id ) } )	
 			$(".send_one_invite button").click( function(){ parent.sendInvite( hash_target, id ) } )	
+			
 		}
+		
+		$(".send_one_reminder_not_reg button").click( function(){ parent.sendReminderNotReg( hash_target, id ) } )
+		$(".send_one_reminder_reg button").click( function(){ parent.sendReminderReg( hash_target, id ) } )
+		$(".send_one_poll button").click( function(){ parent.sendPoll( hash_target, id ) } )
 	}
 	this.addEmail = function ( hash_target, id){
-		$.get( "..\?q=add_to_invite&id=" +id+ "&email=" + $(".invite_add_email .email").val(),{}, function(){ window.location.reload() }  )
-		//window.location.reload()
+		$.get( "../?q=add_to_invite&id=" +id+ "&email=" + $(".invite_add_email .email").val(),{}, function(){ window.location.reload() })
+
 	}
 	this.sendRegister = function ( hash_target, id){
-		$.get( "..\?q=register&id=" +id+ "&email=" + $(".register .register_email").val(),{}, function(){ window.location.reload() }  )
+		$.get( "../?q=register&id=" +id+ "&email=" + $(".register .register_email").val(),{}, function(){ /*window.location.reload()*/  })
 	}
+	
+	//Send buttons
 	this.sendInvite = function ( hash_target, id){
-		$.get( "..\?q=send_invite&id=" + id,{}, function(){ window.location.reload() }  )
+		$.get( "../?q=send_invite&id=" + id,{}, function(){ window.location.reload()  })
+	}
+	this.sendReminderNotReg = function ( hash_target, id){
+		alert("sendReminderNotReg")
+		$.get( "../?q=send_reminder_not_registered&id=" + id,{}, function(){ window.location.reload()  })
+	}
+	this.sendReminderReg = function ( hash_target, id ){
+		alert("sendReminderReg")
+		$.get( "../?q=send_reminder_registered&id=" + id,{}, function(){ window.location.reload()  })
+	}
+	this.sendPoll= function ( hash_target, id ){
+		$.get( "../?q=send_poll&id=" + id,{}, function(){ window.location.reload()  })
 	}
 	
 	this.getLists = function( hash_target, id ){

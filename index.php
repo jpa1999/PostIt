@@ -19,13 +19,13 @@ $paths = array(
 								), 
 				"reminders_not_registered" => array( 
 									"date" => 			$path . "/reminders_not_registered/date.txt",
-									"sended" => 		$path . "/reminders_not_registered/to_be_sended.txt",
-									"to_be_sended" =>  	$path . "/reminders_not_registered/sended.txt"
+									"sended" => 		$path . "/reminders_not_registered/sended.txt",
+									"to_be_sended" =>  	$path . "/reminders_not_registered/to_be_sended.txt"
 								), 
 				"reminders_registered" => array( 
 									"date" => 			$path . "/reminders_registered/date.txt",
-									"sended" => 		$path . "/reminders_registered/to_be_sended.txt",
-									"to_be_sended" =>  	$path . "/reminders_registered/sended.txt"
+									"sended" => 		$path . "/reminders_registered/sended.txt",
+									"to_be_sended" =>  	$path . "/reminders_registered/to_be_sended.txt"
 								), 
 				"polls"	=> array( 
 									"date" => 			$path . "/poll/date.txt",
@@ -33,7 +33,7 @@ $paths = array(
 									"to_be_sended" =>  	$path . "/poll/to_be_sended.txt"
 								)
 				);
-//Invite
+/*//Invite
 $invite_date_path 			= $path . "/invite/date.txt";
 $invite_sended_path 		= $path . "/invite/sended.txt";
 $invite_to_be_sended_path 	= $path . "/invite/to_be_sended.txt";
@@ -50,8 +50,8 @@ $reminders_registered_sended_path 			= $path . "/reminders_registered/sended.txt
 //Poll invite
 $poll_date_path 				= $path . "/poll/date.txt";
 $poll_sended_path 				= $path . "/poll/sended.txt";
-$poll_to_be_sended_path 		= $path . "/poll/to_be_sended.txt";
-// Dates
+$poll_to_be_sended_path 		= $path . "/poll/to_be_sended.txt";*/
+
 //--------------------------
 // Dates
 //---------------------------
@@ -62,28 +62,6 @@ if( $_GET['q'] == "set_date" ){
 	file_put_contents( $paths[ $posting ]['date'], $_GET['date'] );
 }
 
-//--------------------------
-// List folders
-//---------------------------
-if( $_GET['q'] == "list_created_events" ){
-	
-	$json = '{ "data":[';
-	
-	if ($handle = opendir( $data_path )) {
-		/* This is the correct way to loop over the directory. */
-    	while(  false !== ($entry = readdir($handle))  ){
-       		$filetype = filetype( $data_path.$entry );
-			if( $filetype== "dir" && $entry!="." && $entry!=".." && $entry!="errors" ){
-				$json .= '{"dir_name":"' . $entry . '"},';
-			}
-    	}
-	}
-	
-	$json = rtrim ( $json, "," );
-	$json .= "]}";
-	
-	echo $json;
-}
 //--------------------------
 // Single add mail
 //---------------------------
@@ -97,10 +75,37 @@ if( $_GET['q'] == "remove_from_invite" ){
 // Send invite
 //-----------------------------
 if( $_GET['q'] == "send_invite" ){
-	
-	$sended_mail = sendOneEmail( $paths["invites"]['to_be_sended'], $paths["invites"]['sended'] );
-	if( !empty($sended_mail) ){
-		addLine(  $paths["reminders_not_registered"]['to_be_sended'], $sended_mail  );
+	if(  !dateNotGone( $paths["invites"]['date'] ) ) {
+		$sended_mail = sendOneEmail(  $paths["invites"]['to_be_sended'], $paths["invites"]['sended']  );
+		
+		if( !empty($sended_mail) ){
+			echo "AD to registered";
+			addLine(  $paths["reminders_not_registered"]['to_be_sended'], $sended_mail  );
+		}
+	}else{
+		echo "Send date in future";	
+	}
+}
+//--------------------------
+// Send reminder
+//---------------------------
+if( $_GET['q'] == "send_reminder_registered" ){
+	if(  !dateNotGone( $paths["reminders_registered"]['date'] ) ) {
+		sendOneEmail( $paths["reminders_registered"]['to_be_sended'], 		$paths["reminders_registered"]['sended'] );
+	}
+}
+if( $_GET['q'] == "send_reminder_not_registered" ){
+	if(  !dateNotGone( $paths["reminders_not_registered"]['date'] ) ) {
+		sendOneEmail( $paths["reminders_not_registered"]['to_be_sended'], 	$paths["reminders_not_registered"]['sended'] );
+	}
+}
+
+//--------------------------
+// Send Poll
+//---------------------------
+if( $_GET['q'] == "send_poll" ){
+	if(  !dateNotGone( $paths["polls"]['date'] ) ) {
+		sendOneEmail( $paths["polls"]['to_be_sended'], $paths["polls"]['sended'] );
 	}
 }
 //--------------------------
@@ -110,26 +115,13 @@ if( $_GET['q'] == "register" ){
 	
 	// CAN NON-INVITED REGISTER?
 	checkEmail( $email );
+	addLine(  $paths["register"]['registered'], $email  );
 	
-	addLine(  $register_registered_path, $email  );
 	if(  dateNotGone( $paths["polls"]['date'] )  					) addLine(  $paths["polls"]['to_be_sended'], $email  );
 	if(  dateNotGone( $paths["reminders_registered"]['date'] )  	) addLine(  $paths["reminders_registered"]['to_be_sended'], $email  );
 	
 	removeLine( $paths["reminders_not_registered"]['to_be_sended'], $email );
 
-}
-//--------------------------
-// Send reminder
-//---------------------------
-if( $_GET['q'] == "send_reminder" ){
-	sendOneEmail( $paths["reminders_registered"]['to_be_sended'], 		$paths["reminders_registered"]['sended'] );
-	sendOneEmail( $paths["reminders_not_registered"]['to_be_sended'], 	$paths["reminders_not_registered"]['sended'] );
-}
-//--------------------------
-// Send Poll
-//---------------------------
-if( $_GET['q'] == "send_poll" ){
-	sendOneEmail( $paths["polls"]['to_be_sended'], $paths["polls"]['sended'] );
 }
 //--------------------------
 // Get unregistered lis
@@ -189,40 +181,27 @@ if( $_GET['q'] == "add_new_event" ){
 
 
 //--------------------------
-// Reminders not needed?
+// List folders
 //---------------------------
-/*if( $_GET['q'] == "create_reminders" ){
+if( $_GET['q'] == "list_created_events" ){
 	
-	if( empty($id) ){
-		reportError("Empty id");
-		exit("Empty ID!");
+	$json = '{ "data":[';
+	
+	if ($handle = opendir( $data_path )) {
+		/* This is the correct way to loop over the directory. */
+    	while(  false !== ($entry = readdir($handle))  ){
+       		$filetype = filetype( $data_path.$entry );
+			if( $filetype== "dir" && $entry!="." && $entry!=".." && $entry!="errors" ){
+				$json .= '{"dir_name":"' . $entry . '"},';
+			}
+    	}
 	}
 	
-	$reminders_registered_path 		= $data_path . $id ."/reminders_registered/to_be_sended.txt";
-	$reminders_not_registered_path 	= $data_path . $id ."/reminders_not_registered/to_be_sended.txt";
-	$sended_path 					= $data_path . $id ."/invite/sended.txt";
-	$registered_path 				= $data_path . $id ."/registered/registered.txt";
+	$json = rtrim ( $json, "," );
+	$json .= "]}";
 	
-	$sended = file( $sended_path, FILE_IGNORE_NEW_LINES );
-	$registered = file( $registered_path, FILE_IGNORE_NEW_LINES );
-
-	$reminders_registered = array();
-	$reminders_not_registered = array();
-	
-	foreach( $sended as $sended_item ){
-		$item = trim( $sended_item );
-		if( empty($item) ) continue;
-		
-		if( in_array( $item, $registered )  ){
-			array_push( $reminders_registered, $item."\n" );
-		}else{
-			array_push( $reminders_not_registered, $item."\n");
-		}
-	}
-	
-	saveArrayToFile( $reminders_registered_path, $reminders_registered );
-	saveArrayToFile( $reminders_not_registered_path, $reminders_not_registered );
-}*/
+	echo $json;
+}
 
 //---------------------------
 // functions
@@ -235,6 +214,7 @@ function moveEmail( $source, $target, $email ){
 
 function sendOneEmail( $source_path, $sended_path ){
 	
+	echo "Send one email";
 	//-------------------------
 	// Get next line
 	//-------------------------
@@ -248,6 +228,7 @@ function sendOneEmail( $source_path, $sended_path ){
 		addLine( $sended_path, $email );
 		return ($email);
 	}else{
+		echo "NO Pop";
 		reportError("not valid email");
 		return("");
 	}
@@ -260,7 +241,8 @@ function dateNotGone( $date_file ){
 	$date_string = file_get_contents( $date_file );
 	$timestamp = changeDatetimeToTime( $date_string );
 	
-	echo "Timestamp: " . $timestamp . " / Current: " .  time();
+	echo $date_string . " | Date bigger than now: " . ($timestamp > time()) ."<br>";
+
 	
 	if( $timestamp > time() ){
 		return true;	
@@ -300,8 +282,9 @@ function addLine( $path, $email ){
 	
 	checkFile($path);
 	checkEmail( trim($email) );
-	checkLineNotOnFile( $path, $email );
-	file_put_contents( $path, trim($email) . "\n" , FILE_APPEND );
+	if( checkLineNotOnFile( $path, $email ) ){
+		file_put_contents( $path, trim($email) . "\n" , FILE_APPEND );
+	}
 
 }
 
@@ -313,8 +296,7 @@ function popLine ( $path ){
 }
 
 function saveArrayToFile( $path, $array ){
-	$array_string = implode( $array ); 
-	print_r( $array_string );
+	$array_string = implode( "\n",$array ); 
 	file_put_contents( $path, $array_string );
 }
 //-------------------------
@@ -353,7 +335,9 @@ function checkLineNotOnFile( $path, $line ){
 	$file_array = file( $path, FILE_IGNORE_NEW_LINES );
 	if( in_array( trim($line), $file_array ) ){
 		reportError("Line allready in file");
-		exit("Line allready in file");
+		return( false );
+	}else{
+		return( true );
 	}
 }
 //---------------------------

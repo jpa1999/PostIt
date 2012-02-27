@@ -99,6 +99,11 @@
                        		<div class="box">
                             	Muistutuksen lähetysaika rekisteröitymättömille: <input type="text" name="invites_date" id="reminders_not_registered_date"  class="date"/>
                             </div>
+                            <!-- Send one email-->
+                            <div class="send_one_reminder_not_reg box">
+                            	<button>Lähetä muistutus</button>
+                            </div>
+                            
                             <pre></pre>
                         </div>
                         <div id="reminders_not_reg_sended" class="reminders_not_reg_sended"><pre></pre></div>
@@ -118,10 +123,17 @@
                        		<div class="box">
                         		Muistutuksen lähetysaika rekisteröityneille: <input type="text" name="invites_date" id="reminders_registered_date" class="date"/>
                             </div>
+                            <!-- Send one email-->
+                            <div class="send_one_reminder_reg box">
+                            	<button>Lähetä muistutus</button>
+                            </div>
                         	<pre></pre>
                         </div>
                         
-                        <div id="reminders_reg_sended" class="reminders_reg_sended"><pre></pre></div>
+                        <div id="reminders_reg_sended" class="reminders_reg_sended">
+                        	
+                           	<pre></pre>
+                         </div>
                  </div>
             </div>
             <!------------------------------------------------->
@@ -137,7 +149,10 @@
                             <div class="box">
                                 Gallup kutusujen lähetysaika: <input type="text" name="polls_date" id="polls_date"  class="date"/>
                             </div>
-                            
+                             <!-- Send one email-->
+                            <div class="send_one_poll box">
+                            	<button>Lähetä kyselykutsu</button>
+                            </div>
                             <pre></pre>
                         </div>
                         <div id="polls_sended" class="polls_sended"><pre></pre></div>

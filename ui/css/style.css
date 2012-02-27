@@ -27,10 +27,12 @@ a:hover{
 	/*text-decoration:underline;*/
 }
 button{
-	margin-top:15px;
+	/*margin-top:15px;
 	padding:0px;
 	border:none;
-	background-color:transparent;
+	background-color:transparent;*/
+	font-size:11px;
+	padding:10px;
 }
 
 
