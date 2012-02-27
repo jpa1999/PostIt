@@ -11,7 +11,9 @@ function initAplication(){
 	parent.App = new Application( parent )
 }
 
-
+function changePage(){
+	alert("asdasd")	
+}
 var Application = function( parent ){
 		
 	this.id = 0

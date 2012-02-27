@@ -8,6 +8,31 @@ $q 			= cleanString( $_GET['q'] );
 
 $path = $data_path . $id;
 
+$paths = array( 
+				"invites" => array( 
+									"date" => 			$path . "/invite/date.txt",
+									"sended" => 		$path . "/invite/sended.txt",
+									"to_be_sended" =>  	$path . "/invite/to_be_sended.txt"
+								), 
+				"register" => array( 
+									"registered" => 	$path . "/registered/registered.txt",
+								), 
+				"reminders_not_registered" => array( 
+									"date" => 			$path . "/reminders_not_registered/date.txt",
+									"sended" => 		$path . "/reminders_not_registered/to_be_sended.txt",
+									"to_be_sended" =>  	$path . "/reminders_not_registered/sended.txt"
+								), 
+				"reminders_registered" => array( 
+									"date" => 			$path . "/reminders_registered/date.txt",
+									"sended" => 		$path . "/reminders_registered/to_be_sended.txt",
+									"to_be_sended" =>  	$path . "/reminders_registered/sended.txt"
+								), 
+				"polls"	=> array( 
+									"date" => 			$path . "/poll/date.txt",
+									"sended" => 		$path . "/poll/sended.txt",
+									"to_be_sended" =>  	$path . "/poll/to_be_sended.txt"
+								)
+				);
 //Invite
 $invite_date_path 			= $path . "/invite/date.txt";
 $invite_sended_path 		= $path . "/invite/sended.txt";
@@ -15,51 +40,28 @@ $invite_to_be_sended_path 	= $path . "/invite/to_be_sended.txt";
 //Register
 $register_registered_path 	= $path . "/registered/registered.txt";
 //Reminders for not registered
-$reminders_not_registered_date_path . "/reminders_not_registered/date.txt";
+$reminders_not_registered_date_path			= $path . "/reminders_not_registered/date.txt";
 $reminders_not_registered_to_be_sended_path = $path . "/reminders_not_registered/to_be_sended.txt";
 $reminders_not_registered_sended_path 		= $path . "/reminders_not_registered/sended.txt";
 //Reminders for registered
-$reminders_registered_date_path . "/reminders_registered/date.txt";
+$reminders_registered_date_path 			= $path ."/reminders_registered/date.txt";
 $reminders_registered_to_be_sended_path 	= $path . "/reminders_registered/to_be_sended.txt";
 $reminders_registered_sended_path 			= $path . "/reminders_registered/sended.txt";
 //Poll invite
+$poll_date_path 				= $path . "/poll/date.txt";
 $poll_sended_path 				= $path . "/poll/sended.txt";
 $poll_to_be_sended_path 		= $path . "/poll/to_be_sended.txt";
 // Dates
-$poll_date_path 				= $path . "/poll/date.txt";
-$reminders_registered_date_path = $path . "/reminders_registered/date.txt";
-$reminders_not_registered_date_path = $path . "/reminders_registered/date.txt";
 //--------------------------
 // Dates
 //---------------------------
 if( $_GET['q'] == "get_date" ){
-	if( $posting == "invites" ){
-		echo( timeToDatetime( file_get_contents( $invite_date_path )) );
-	}
-	if( $posting == "reminders_not_registered" ){
-		echo( timeToDatetime( file_get_contents( $reminders_not_registered_date_path )) );
-	}
-	if( $posting == "reminders_registered" ){
-		echo( timeToDatetime( file_get_contents( $reminders_registered_date_path )) );
-	}
-	if( $posting == "polls" ){
-		echo( timeToDatetime( file_get_contents( $polls_date_path )) );
-	}
+	echo file_get_contents(  $paths[ $posting ]['date']  ) ;
 }
 if( $_GET['q'] == "set_date" ){
-	if( $posting == "invites" ){
-		echo( timeToDatetime( file_get_contents( $invite_date_path )) );
-	}
-	if( $posting == "reminders_not_registered" ){
-		echo( timeToDatetime( file_get_contents( $reminders_not_registered_date_path )) );
-	}
-	if( $posting == "reminders_registered" ){
-		echo( timeToDatetime( file_get_contents( $reminders_registered_date_path )) );
-	}
-	if( $posting == "polls" ){
-		echo( timeToDatetime( file_get_contents( $polls_date_path )) );
-	}	
+	file_put_contents( $paths[ $posting ]['date'], $_GET['date'] );
 }
+
 //--------------------------
 // List folders
 //---------------------------
@@ -86,19 +88,19 @@ if( $_GET['q'] == "list_created_events" ){
 // Single add mail
 //---------------------------
 if( $_GET['q'] == "add_to_invite" ){
-	addLine(  $invite_to_be_sended_path, $email  );
+	addLine(  $paths["invites"]['to_be_sended'], $email  );
 }
 if( $_GET['q'] == "remove_from_invite" ){
-	removeLine(  $invite_to_be_sended_path, $email  );
+	removeLine(  $paths["invites"]['to_be_sended'], $email  );
 }
 //-----------------------------
 // Send invite
 //-----------------------------
 if( $_GET['q'] == "send_invite" ){
 	
-	$sended_mail = sendOneEmail( $invite_to_be_sended_path, $invite_sended_path );
+	$sended_mail = sendOneEmail( $paths["invites"]['to_be_sended'], $paths["invites"]['sended'] );
 	if( !empty($sended_mail) ){
-		addLine(  $reminders_not_registered_to_be_sended_path, $sended_mail  );
+		addLine(  $paths["reminders_not_registered"]['to_be_sended'], $sended_mail  );
 	}
 }
 //--------------------------
@@ -110,24 +112,24 @@ if( $_GET['q'] == "register" ){
 	checkEmail( $email );
 	
 	addLine(  $register_registered_path, $email  );
-	if(  dateNotGone( $poll_date_path )  					) addLine(  $poll_to_be_sended_path, $email  );
-	if(  dateNotGone( $reminders_registered_date_path )  	) addLine(  $reminders_registered_to_be_sended_path, $email  );
+	if(  dateNotGone( $paths["polls"]['date'] )  					) addLine(  $paths["polls"]['to_be_sended'], $email  );
+	if(  dateNotGone( $paths["reminders_registered"]['date'] )  	) addLine(  $paths["reminders_registered"]['to_be_sended'], $email  );
 	
-	removeLine( $reminders_not_registered_to_be_sended_path, $email );
+	removeLine( $paths["reminders_not_registered"]['to_be_sended'], $email );
 
 }
 //--------------------------
 // Send reminder
 //---------------------------
 if( $_GET['q'] == "send_reminder" ){
-	sendOneEmail( $reminders_registered_to_be_sended_path, $reminders_registered_sended_path );
-	sendOneEmail( $reminders_not_registered_to_be_sended_path, $reminders_not_registered_sended_path );
+	sendOneEmail( $paths["reminders_registered"]['to_be_sended'], 		$paths["reminders_registered"]['sended'] );
+	sendOneEmail( $paths["reminders_not_registered"]['to_be_sended'], 	$paths["reminders_not_registered"]['sended'] );
 }
 //--------------------------
 // Send Poll
 //---------------------------
 if( $_GET['q'] == "send_poll" ){
-	sendOneEmail( $poll_to_be_sended_path, $poll_sended_path );
+	sendOneEmail( $paths["polls"]['to_be_sended'], $paths["polls"]['sended'] );
 }
 //--------------------------
 // Get unregistered lis
@@ -136,10 +138,10 @@ if( $_GET['q'] == "list_unregistered" ){
 
 	$unregistered_array = array_diff (
 				array_merge ( 
-						file( $invite_to_be_sended_path, 	FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ), 
-						file( $invite_sended_path, 			FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ) 
+						file( $paths["invites"]['to_be_sended'], 	FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ), 
+						file( $paths["invites"]['sended'], 			FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ) 
 				), 
-				file( $register_registered_path, 			FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ) 
+				file( $paths["register"]['registered'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ) 
 			
 			);
 	echo implode( "\n",$unregistered_array );
@@ -159,26 +161,26 @@ if( $_GET['q'] == "add_new_event" ){
 		mkdir( $path );
 		//Invite
 		mkdir( $path . "/invite"  );
-		file_put_contents( $invite_date_path, "" );
-		file_put_contents( $invite_sended_path, "" );
-		file_put_contents( $invite_to_be_sended_path, "" );
+		file_put_contents( $paths["invites"]['date'], "" );
+		file_put_contents( $paths["invites"]['sended'], "" );
+		file_put_contents( $paths["invites"]['to_be_sended'], "" );
 		//Registered
 		mkdir( $path . "/registered"  );
-		file_put_contents( $register_registered_path, "" );
+		file_put_contents( $paths["register"]['registered'], "" );
 		//Reminder not registered
 		mkdir( $path . "/reminders_not_registered"  );
-		file_put_contents( $reminders_not_registered_date_path, "" );
-		file_put_contents( $reminders_not_registered_sended_path, "" );
-		file_put_contents( $reminders_not_registered_to_be_sended_path , "" );
+		file_put_contents( $paths["reminders_not_registered"]['date'], "" );
+		file_put_contents( $paths["reminders_not_registered"]['sended'], "" );
+		file_put_contents( $paths["reminders_not_registered"]['to_be_sended'] , "" );
 		//Reminder registered
 		mkdir( $path . "/reminders_registered"  );
-		file_put_contents( $reminders_registered_date_path, "" );
-		file_put_contents( $reminders_registered_sended_path, "" );
-		file_put_contents( $reminders_registered_to_be_sended_path, "" );
+		file_put_contents( $paths["reminders_registered"]['date'], "" );
+		file_put_contents( $paths["reminders_registered"]['sended'], "" );
+		file_put_contents( $paths["reminders_registered"]['to_be_sended'], "" );
 		//Poll
 		mkdir( $path . "/poll"  );
-		file_put_contents( $poll_sended_path, "" );
-		file_put_contents( $poll_to_be_sended_path, "" );
+		file_put_contents( $paths["polls"]['sended'], "" );
+		file_put_contents( $paths["polls"]['to_be_sended'], "" );
 		
 	}else{
 		exit( "No id!" );	
@@ -251,8 +253,9 @@ function sendOneEmail( $source_path, $sended_path ){
 	}
 	
 }
-//Date
-
+//-----------
+// Date
+//-----------
 function dateNotGone( $date_file ){
 	$date_string = file_get_contents( $date_file );
 	$timestamp = changeDatetimeToTime( $date_string );
@@ -272,7 +275,6 @@ function changeDatetimeToTime( $date_fi ){
 	return mktime( (int)$time_explode[0],(int)$time_explode[1],0, (int)$date_explode[1],(int)$date_explode[0],(int)$date_explode[2] );
 }
 
-
 //----------
 // Lines
 //----------
@@ -281,7 +283,7 @@ function removeLine( $path, $email ){
 	checkFile($path);
 	
 	$line_removed = false;
-	$lines = file( $path, FILE_SKIP_EMPTY_LINES  );
+	$lines = file( $path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES  );
 	
 	foreach( $lines as $key => $val ){
 		if(  trim($val) == trim($email) ){
@@ -304,7 +306,7 @@ function addLine( $path, $email ){
 }
 
 function popLine ( $path ){
-	$lines = file( $path, FILE_SKIP_EMPTY_LINES  );
+	$lines = file( $path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES  );
 	$line = array_pop( $lines );
 	saveArrayToFile( $path, $lines );
 	return $line;
@@ -312,7 +314,6 @@ function popLine ( $path ){
 
 function saveArrayToFile( $path, $array ){
 	$array_string = implode( $array ); 
-	echo"?????????????????????";
 	print_r( $array_string );
 	file_put_contents( $path, $array_string );
 }

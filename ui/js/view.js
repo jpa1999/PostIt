@@ -91,10 +91,12 @@ var MainView = function( model ){
 		var random_string = "?rand=" + Math.random()
 		
 		if( hash_target =="invites" ){
-			$("#invites_tabs .invites_to_be_sended pre").load( basepath + "/invite/to_be_sended.txt" + random_string );	
-			$("#invites_tabs .invites_sended pre").load( basepath + "/invite/sended.txt" + random_string );
-			$("#invites_tabs .registered pre").load( basepath + "/registered/registered.txt" + random_string );
+			$("#invites_tabs .invites_to_be_sended pre").load( basepath + "/invite/to_be_sended.txt" + random_string )
+			$("#invites_tabs .invites_sended pre").load( basepath + "/invite/sended.txt" + random_string )
+			$("#invites_tabs .registered pre").load( basepath + "/registered/registered.txt" + random_string )
 			$("#invites_tabs .unregistered pre").load( unregistered_path );
+			
+			this.loadDate( "invites", id )
 		}
 		if( hash_target =="reminders_registered" ){
 			$("#reminders_registered_tabs .reminders_reg_to_be_sended pre").load( basepath + "/reminders_registered/to_be_sended.txt" + random_string );	
@@ -121,12 +123,14 @@ var MainView = function( model ){
 	
 		$('#' + hash_target + '_date').datetimepicker( {
    										onClose: function(dateText, inst) { 
-												$.get("../?q=set_date&id=" + id + "&date=" +dateText+ "&category=" + hash_target) 
+												alert("hep!")
+												alert( dateText )
+												$.get("../?q=set_date&id=" + id + "&date=" +dateText+ "&posting=" + hash_target) 
 										}
 									} );
 	}
 	this.loadDate = function( hash_target, id ){
-			$.get("../?q=get_date&id=" + id + "&category=" + hash_target,{}, function( data ){ $('#' + hash_target + '_date').val( data ) }) 
+			$.get("../?q=get_date&id=" + id + "&posting=" + hash_target,{}, function( data ){ $('#' + hash_target + '_date').val( data ) }) 
 			
 	}
 	
@@ -144,6 +148,12 @@ var MainView = function( model ){
 	this.initButtons = function(){
 		var main_view = this
 		$("#event_selection select").change( function( event ){ main_view.changeEvent() }  );
+		
+		$("a.invites").click( function(){ window.location.hash ="invites-show-" + main_view.model.id } )
+		$("a.register").click( function(){ window.location.hash ="register-show-" + main_view.model.id } )
+		$("a.polls").click( function(){ window.location.hash ="polls-show-" + main_view.model.id } )
+		$("a.reminders_registered").click( function(){ window.location.hash ="reminders_registered-show-" + main_view.model.id } )
+		$("a.reminders_not_registered").click( function(){ window.location.hash ="reminders_not_registered-show-" + main_view.model.id } )
 	}
 	
 	this.changeEvent = function(){

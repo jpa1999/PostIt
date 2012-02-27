@@ -20,6 +20,7 @@ h3{
 a,a:hover,a:active,a:visited{
 	text-decoration:none;
 	color:#004080;
+	cursor:pointer;
 }
 
 a:hover{
