@@ -10,9 +10,9 @@ $path = $data_path . $id;
 
 $paths = array( 
 				"invites" => array( 
-									"date" => 			$path . "/invite/date.txt",
-									"sended" => 		$path . "/invite/sended.txt",
-									"to_be_sended" =>  	$path . "/invite/to_be_sended.txt"
+									"date" => 			$path . "/invites/date.txt",
+									"sended" => 		$path . "/invites/sended.txt",
+									"to_be_sended" =>  	$path . "/invites/to_be_sended.txt"
 								), 
 				"register" => array( 
 									"registered" => 	$path . "/registered/registered.txt",
@@ -28,29 +28,11 @@ $paths = array(
 									"to_be_sended" =>  	$path . "/reminders_registered/to_be_sended.txt"
 								), 
 				"polls"	=> array( 
-									"date" => 			$path . "/poll/date.txt",
-									"sended" => 		$path . "/poll/sended.txt",
-									"to_be_sended" =>  	$path . "/poll/to_be_sended.txt"
+									"date" => 			$path . "/polls/date.txt",
+									"sended" => 		$path . "/polls/sended.txt",
+									"to_be_sended" =>  	$path . "/polls/to_be_sended.txt"
 								)
 				);
-/*//Invite
-$invite_date_path 			= $path . "/invite/date.txt";
-$invite_sended_path 		= $path . "/invite/sended.txt";
-$invite_to_be_sended_path 	= $path . "/invite/to_be_sended.txt";
-//Register
-$register_registered_path 	= $path . "/registered/registered.txt";
-//Reminders for not registered
-$reminders_not_registered_date_path			= $path . "/reminders_not_registered/date.txt";
-$reminders_not_registered_to_be_sended_path = $path . "/reminders_not_registered/to_be_sended.txt";
-$reminders_not_registered_sended_path 		= $path . "/reminders_not_registered/sended.txt";
-//Reminders for registered
-$reminders_registered_date_path 			= $path ."/reminders_registered/date.txt";
-$reminders_registered_to_be_sended_path 	= $path . "/reminders_registered/to_be_sended.txt";
-$reminders_registered_sended_path 			= $path . "/reminders_registered/sended.txt";
-//Poll invite
-$poll_date_path 				= $path . "/poll/date.txt";
-$poll_sended_path 				= $path . "/poll/sended.txt";
-$poll_to_be_sended_path 		= $path . "/poll/to_be_sended.txt";*/
 
 //--------------------------
 // Dates
@@ -188,11 +170,10 @@ if( $_GET['q'] == "list_created_events" ){
 	$json = '{ "data":[';
 	
 	if ($handle = opendir( $data_path )) {
-		/* This is the correct way to loop over the directory. */
-    	while(  false !== ($entry = readdir($handle))  ){
+		while(  false !== ($entry = readdir($handle))  ){
        		$filetype = filetype( $data_path.$entry );
 			if( $filetype== "dir" && $entry!="." && $entry!=".." && $entry!="errors" ){
-				$json .= '{"dir_name":"' . $entry . '"},';
+				$json .= '{"folder_id":"' . $entry . '"},';
 			}
     	}
 	}
@@ -201,8 +182,15 @@ if( $_GET['q'] == "list_created_events" ){
 	$json .= "]}";
 	
 	echo $json;
-}
 
+	
+}
+//--------------------------
+// Paths
+//---------------------------
+if( $_GET['q'] == "get_paths" ){
+	print_r( json_encode( $paths ) );	
+}
 //---------------------------
 // functions
 //---------------------------

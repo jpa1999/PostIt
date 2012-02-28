@@ -2,7 +2,6 @@ $(document).ready( documentReady )
 
 function documentReady(){
 	initAplication()
-
 }
 
 function initAplication(){
@@ -11,58 +10,78 @@ function initAplication(){
 	parent.App = new Application( parent )
 }
 
-function changePage(){
-	alert("asdasd")	
-}
 var Application = function( parent ){
 		
 	this.id = 0
-	
+	this.parent = parent
+	this.paths = {}
 	
 	this.init = function(){
-		var application = this
-		$.getJSON( "../?q=list_created_events",   function( data ){ 
-														application.view.populateEventDropDown( data ) 
-													})
-		this.parent = parent
+		this.url_variables = new UrlVariables()
+		
+		//Set id from url hash
+		this.updateID()
 		this.view = new MainView( this )
+		this.addHashListener()
+	}
+		
+	this.addHashListener = function(){
+		var application = this
+		jQuery(window).hashchange(  function(){ application.updateID() }   );	
 	}
 	
-	this.updateID = function( id ){
-		this.id = id
+	this.updateID = function(){
+		this.hash = new Hash()
+		this.id = this.hash.parameter
+		alert( "ID" + this.id )
+		this.loadPathsAndFolders()
 	}
 	
+	this.loadPathsAndFolders = function(){
+		var application = this
+		$.getJSON('../?q=get_paths&id=' + this.id, function( data ){ application.pathsLoaded( data ) })
+		$.getJSON( "../?q=list_created_events",   function( data ){  application.view.populateEventDropDown( data.data )  })
+		alert("Loaded paths ansd folders " + this.id )
+	}
+	
+	this.pathsLoaded = function( data ){
+		this.paths = data
+		this.view.update()
+	}
+	
+	this.setHashParameters = function(){
+		return this.parent.checkHash()	
+	}
+	
+	
+
 	this.init()	
 }
 
 //------------------------------------
 // HASH
 //------------------------------------
-this.checkHash = function(){
+var Hash = function(){
 			
-	if( window.location.hash != false ){
-		hash_string = String( window.location.hash )
-		hash_position = hash_string.indexOf('#')
+	this.init = function(){
 		
-		values = hash_string.substring(  hash_position+1 )
-				
-		hash_value_pairs = values.split("&")
-				
-		this.hash_items = new Array()
-				
-		for(i=0; i<hash_value_pairs.length; i++ ){
-			item_name = hash_value_pairs[i].split("=")[0]
-			item_value = hash_value_pairs[i].split("=")[1]
-					
-			this.hash_items[ item_name ] = item_value
-		}
-		
-		return values
-	}else{
-		return false	
-	}	
+		if( window.location.hash != false ){
+			
+			hash_string = String( window.location.hash )
+			hash_position = hash_string.indexOf('#')
+			values = hash_string.substring(  hash_position+1 )
+			
+			var hash_array 		= values.split("-")
+			this.target 	= hash_array[0]
+			this.status 	= hash_array[1]
+			this.parameter = hash_array[2]
+			
+		}	
+	}
 
+	this.init()
 }
+
 
 
 //--------------------------------

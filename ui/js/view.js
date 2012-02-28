@@ -5,25 +5,19 @@ var MainView = function( model ){
 
 	this.model = model
 	this.cookies = new Cookies;
+	this.random_string =	"?rand=" + Math.random()
+	this.basepath = 		"../../data/" + this.model.id
+		
 	
-	this.init = function(){
-		this.addHashListener()
+	this.init = function(){}
+
+	this.update = function(){
 		this.changePage()
 		this.initButtons()
 	}
 	
-	
-	
-	
-	this.addHashListener = function(){
-		var parent = this
-		jQuery(window).hashchange( function(){ parent.changePage() }  );	
-	}
-	
 	this.changePage = function(){
-		( this.model.parent.checkHash() )? this.show( this.model.parent.checkHash() ) : this.show( "etusivu" );	
-		
-		
+		( this.model.hash )? this.show( this.model.hash ) : this.show( "etusivu" );	
 	}
 	
 	this.hideEverything = function(){
@@ -33,25 +27,14 @@ var MainView = function( model ){
 	
 	this.show = function( hash ){
 		
-		var url_variables = new UrlVariables()
-		
-		var hash_array 		= hash.split("-")
-		var hash_target 	= hash_array[0]
-		var hash_status 	= hash_array[1]
-		var hash_parameter 	= hash_array[2]
-
-		if( hash_parameter ){
-			this.model.updateID( hash_parameter )	
-		}
-		
 		this.hideEverything();
-		$("." +  hash_target ).show()
+		$("." +  hash.target ).show()
 
 		if( hash != "etusivu" ){
 			
-			this.getLists( hash_target, this.model.id )
-			this.getDates( hash_target, this.model.id )
-			this.initRegisterForm( hash_target, this.model.id )
+			this.getLists( 			hash.target, this.model.id )
+			this.getDates( 			hash.target, this.model.id )
+			this.initRegisterForm( 	hash.target, this.model.id )
 			
 			$(".navigation ul").show()
 			$(".event_title").show()
@@ -60,8 +43,8 @@ var MainView = function( model ){
 			$(".navigation ul").hide()
 			$(".event_title").hide()
 		}
-		this.checkForErrors( hash_status, hash_parameter )
-		this.highlightNavi( hash_target )
+		this.checkForErrors( hash.status,hash.parameter )
+		this.highlightNavi( hash.target )
 		
 	}
 	
@@ -104,44 +87,35 @@ var MainView = function( model ){
 	
 	this.getLists = function( hash_target, id ){
 		
-		var basepath = "../../data/" + id
-		var unregistered_path = "../?q=list_unregistered&id=" + id
-		var random_string = "?rand=" + Math.random()
+		if( hash_target != "errors"){
+			this.loadSendLists( hash_target )
+			this.loadDate(		hash_target, id )
+		}else{
+			$("#errors pre").load( "../../data/errors/errors.txt" );
+		}
 		
 		if( hash_target =="invites" ){
-			$("#invites_tabs .invites_to_be_sended pre").load( basepath + "/invite/to_be_sended.txt" + random_string )
-			$("#invites_tabs .invites_sended pre").load( basepath + "/invite/sended.txt" + random_string )
-			$("#invites_tabs .registered pre").load( basepath + "/registered/registered.txt" + random_string )
-			$("#invites_tabs .unregistered pre").load( unregistered_path );
-			this.loadDate( "invites", id )
-		}
-		if( hash_target =="reminders_registered" ){
-			$("#reminders_registered_tabs .reminders_reg_to_be_sended pre").load( basepath + "/reminders_registered/to_be_sended.txt" + random_string );	
-			$("#reminders_registered_tabs .reminders_reg_sended pre").load( basepath + "/reminders_registered/sended.txt" + random_string );
-			this.loadDate( "reminders_registered", id )
-		}
-		if( hash_target =="reminders_not_registered" ){
-			$("#reminders_not_registered_tabs .reminders_not_reg_to_be_sended pre").load( basepath + "/reminders_not_registered/to_be_sended.txt" + random_string );	
-			$("#reminders_not_registered_tabs .reminders_not_reg_sended pre").load( basepath + "/reminders_not_registered/sended.txt" + random_string );
-			this.loadDate( "reminders_not_registered", id )
-		}
-		if( hash_target =="polls" ){
-			$("#polls_tabs .polls_to_be_sended pre").load( basepath + "/poll/to_be_sended.txt" + random_string );	
-			$("#polls_tabs .polls_sended pre").load( basepath + "/poll/sended.txt" + random_string );
-			
-			this.loadDate( "polls", id )
-		}
-		if( hash_target =="errors" ){
-			$("#errors pre").load( "../../data/errors/errors.txt" );	
+			$("#invites_tabs .registered pre").load( 	this.basepath + "/registered/registered.txt" + this.random_string )
+			$("#invites_tabs .unregistered pre").load(  "../?q=list_unregistered&id=" + id );
 		}
 		
+	}
+	
+	this.loadSendLists = function( target ){
+		to_be_sended_container = "#" + target + "_tabs ." + target + "_to_be_sended pre"
+		sended_container = "#" + target + "_tabs ." + target + "_sended pre"
+		
+		$( to_be_sended_container ).load( 	"../" + this.model.paths[target].to_be_sended 	+ this.random_string )
+		$( sended_container ).load( 		"../" + this.model.paths[target].sended 		+ this.random_string )
+		
+		//$( to_be_sended_container ).load( 	this.basepath + "/" + target + "/to_be_sended.txt" + this.random_string )
+		//$( sended_container ).load( 		this.basepath + "/" + target + "/sended.txt" + this.random_string 		)
+	
 	}
 	
 	this.getDates = function( hash_target, id ){
 		parent = this
 		$.datepicker.setDefaults( $.datepicker.regional[ "fi" ] );
-		//$('#' + hash_target + '_date').datetimepicker( $.datepicker.regional[ "fi" ]  );
-	
 		$('#' + hash_target + '_date').datetimepicker( {
    										onClose: function(dateText, inst) { 
 												$.get("../?q=set_date&id=" + id + "&date=" +dateText+ "&posting=" + hash_target) 
@@ -165,26 +139,35 @@ var MainView = function( model ){
 	}
 	
 	this.initButtons = function(){
-		var main_view = this
-		$("#event_selection select").change( function( event ){ main_view.changeEvent() }  );
 		
-		$("a.invites").click( function(){ window.location.hash ="invites-show-" + main_view.model.id } )
-		$("a.register").click( function(){ window.location.hash ="register-show-" + main_view.model.id } )
-		$("a.polls").click( function(){ window.location.hash ="polls-show-" + main_view.model.id } )
-		$("a.reminders_registered").click( function(){ window.location.hash ="reminders_registered-show-" + main_view.model.id } )
-		$("a.reminders_not_registered").click( function(){ window.location.hash ="reminders_not_registered-show-" + main_view.model.id } )
+		var main_view = this
+		var targets = [ "invites", "register", "polls", "reminders_registered", "reminders_not_registered" ]
+		
+		for(var target in targets){
+			var current_target = targets[ target ]
+			$("a." + current_target ).click( function(){  main_view.changeView( current_target ) } )
+		}
+		$("#event_selection select").change( function( event ){ main_view.changeEvent() }  );
+
+	}
+	this.changeView = function( view_name ){
+		this.changeHash( view_name + "-show-" + this.model.id )
+	}
+	this.changeEvent = function(){
+		this.changeHash("invites-show-" + $("#event_selection select").val() )
+	}
+	this.changeHash = function( value ){
+		window.location.hash = value
 	}
 	
-	this.changeEvent = function(){
-		this.model.updateID( $("#event_selection select").val() )
-		window.location.hash = "invites-show-" + this.model.id;
-	}
 	this.populateEventDropDown = function( data ){
-		for( index in data.data ){
-			folder_id = data.data[ index ].dir_name
-			$("#event_selection select").append( "<option value='" + folder_id + "'>" + folder_id + "</option>\n" )
-		}
 		
+		$.template("event_dropdown_header","<option value='0'>Valitse tapahtuma:</option>")
+		$.template("event_dropdown_item","<option value='{{=folder_id}}'>{{=folder_id}}</option>\n")
+		
+		$("#event_selection select").html( 		$.render( [{}],"event_dropdown_header" )  	)
+		$("#event_selection select").append( 	$.render(data, "event_dropdown_item" )  	)
+
 	}
 	
 	this.init()
