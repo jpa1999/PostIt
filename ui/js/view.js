@@ -124,7 +124,7 @@ var MainView = function( model ){
 		
 		main_view = this
 		//Reset
-		$('#' + hash_target + '_date_reset').click( function(){ main_view.resetDate( id , hash_target ) })
+		$('#' + hash_target + ' .date_reset').click( function(){ main_view.resetDate( id , hash_target ) })
 		//Datepicker
 		$.datepicker.setDefaults( $.datepicker.regional[ "fi" ] );
 		$('#' + hash_target + '_date').datetimepicker( {
@@ -135,6 +135,7 @@ var MainView = function( model ){
 		$.get("../?q=set_date&id=" + id + "&date=" + date_string + "&posting=" + target, function(data){ ( data>0 )? alert("Aika vaihdettu") : alert("Vaihto epäonnistui"); } ) 
 	}
 	this.resetDate = function( id, target ){
+		alert("asdasd")
 		$.get("../?q=reset_date&id=" + id + "&posting=" + target, function(){ window.location.reload() } )
 	}
 	this.loadDate = function( target, id ){
