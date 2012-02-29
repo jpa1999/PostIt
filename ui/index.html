@@ -48,7 +48,9 @@
                 </ul>
                 <div class="clear"></div>
             </div>
-              
+            
+            <!------------------------------------------------->
+            <!-- INVITES & REGISTERED                        -->
             <!------------------------------------------------->
             <div id="invites" class="view invites">
                 <h1>Kutsut</h1>
@@ -57,14 +59,14 @@
                             <li><a href="#invites_to_be_sended">Lähtevät</a></li>
                             <li><a href="#invites_sended">Lähetetyt</a></li>
                             <li><a href="#registered">Rekisteröityneet</a></li>
-                             <li><a href="#unregistered">Rekisteröitymättämät</a></li>
+                            <li><a href="#unregistered">Rekisteröitymättämät</a></li>
                         </ul>
                         
                         <div id="invites_to_be_sended" class="invites_to_be_sended">
                         
                         	<!-- SEND DATE -->
                             <div class="box">
-                        		Kutsujen lähetysaika: <input type="text" name="invites_date" id="invites_date"  class="date"/> <button class="reset">Poista aika ( älä lähetä )</button>
+                        		Kutsujen lähetysaika: <input type="text" name="invites_date" id="invites_date"  class="date"/> <button id="invites_date_reset">Poista aika ( älä lähetä )</button>
                             </div>
                             <!-- Register -->
                             <div class="invite_add_email box">
@@ -75,18 +77,24 @@
                             	Rekisteröi sähköpostiosoite: <input type="text" name="email" id="register_email"  class="register_email"/> <button>Lähetä</button>
                             </div>
                              <!-- Send one email-->
-                            <div class="send_one_invite box">
+                            <div class="send_one box">
                             	<button>Lähetä yksi email</button>
                             </div>
-                            
-                            <pre></pre>
+                            <div class="full_list box">
+                            	<button>Talleta muutokset listaan</button>
+                        		<textarea class="email_list" ></textarea>
+                            </div>
                         </div>
                         <div id="invites_sended" class="invites_sended"><pre></pre></div>
                         <div id="registered" class="registered"><pre></pre></div>
                         <div id="unregistered" class="unregistered"><pre></pre></div>
                  </div>
             </div>
-             <!------------------------------------------------->
+            
+            
+            <!------------------------------------------------->
+            <!-- REMINDERS NOT YET REGISTERED                -->
+            <!------------------------------------------------->
             <div id="reminders_not_registered" class="view reminders_not_registered">
                 <h1>Muistutukset rekisteröitymättömille</h1>
                 <div id="reminders_not_registered_tabs">
@@ -101,42 +109,56 @@
                             	Muistutuksen lähetysaika rekisteröitymättömille: <input type="text" name="invites_date" id="reminders_not_registered_date"  class="date"/>
                             </div>
                             <!-- Send one email-->
-                            <div class="send_one_reminder_not_reg box">
+                            <div class="send_one box">
                             	<button>Lähetä muistutus</button>
                             </div>
-                            
-                            <pre></pre>
+                            <!-- List-->
+                            <div class="full_list box">
+                            	<button>Talleta muutokset listaan</button>
+                            	<textarea class="email_list" ></textarea>
+                            </div>
                         </div>
-                        <div id="reminders_not_reg_sended" class="reminders_not_reg_sended"><pre></pre></div>
+                        <div id="reminders_not_reg_sended" class="reminders_not_registered_sended"><pre></pre></div>
                  </div>
             </div>
-             <!------------------------------------------------->
+            
+            
+            <!------------------------------------------------->
+            <!-- REMINDERS REGISTERED                        -->
+            <!------------------------------------------------->
             <div id="reminders_registered"  class="view reminders_registered">
                 <h1>Muistutukset jo rekisteröityneille</h1>
                 <div id="reminders_registered_tabs">
-                        <ul>
+                		<ul>
                             <li><a href="#reminders_reg_to_be_sended">Lähtevät</a></li>
                             <li><a href="#reminders_reg_sended">Lähetetyt</a></li>
                         </ul>
                         
-                         <div id="reminders_reg_to_be_sended" class="reminders_reg_to_be_sended">
+                        <div id="reminders_reg_to_be_sended" class="reminders_registered_to_be_sended">
                          	<!-- SEND DATE -->
                        		<div class="box">
                         		Muistutuksen lähetysaika rekisteröityneille: <input type="text" name="invites_date" id="reminders_registered_date" class="date"/>
                             </div>
                             <!-- Send one email-->
-                            <div class="send_one_reminder_reg box">
+                            <div class="send_one box">
                             	<button>Lähetä muistutus</button>
                             </div>
-                        	<pre></pre>
+                            <!-- List-->
+                            <div class="full_list box">
+                            	<button>Talleta muutokset listaan</button>
+                        		<textarea class="email_list" ></textarea>
+                            </div>
                         </div>
                         
-                        <div id="reminders_reg_sended" class="reminders_reg_sended">
-                        	
-                           	<pre></pre>
-                         </div>
+                        <div id="reminders_reg_sended" class="reminders_registered_sended">
+                        	<pre></pre>
+                        </div>
                  </div>
             </div>
+            
+            
+            <!------------------------------------------------->
+            <!-- GALLUP                                      -->
             <!------------------------------------------------->
             <div id="polls" class="view polls">
                 <h1>Gallup kutsut</h1>
@@ -151,19 +173,30 @@
                                 Gallup kutusujen lähetysaika: <input type="text" name="polls_date" id="polls_date"  class="date"/>
                             </div>
                              <!-- Send one email-->
-                            <div class="send_one_poll box">
+                            <div class="send_one box">
                             	<button>Lähetä kyselykutsu</button>
                             </div>
-                            <pre></pre>
+                            <!-- List-->
+                            <div class="full_list box">
+                            	<button>Talleta muutokset listaan</button>
+                        		<textarea class="email_list" ></textarea>
+                            </div>
+                            
                         </div>
                         <div id="polls_sended" class="polls_sended"><pre></pre></div>
                  </div>
             </div>
+
+
+            <!------------------------------------------------->
+            <!-- ERRORS                                      -->
             <!------------------------------------------------->
         	<div id="errors" class="view errors">
                 <h1>Virhe loki</h1>
                 <pre></pre>
             </div>
+            
+            
             <!------------------------------------------------->
             
             <script>
@@ -178,5 +211,9 @@
 	
     </div>
 	</div>
+    
+    <div class="hidden_temp_for_email_lists">
+    	<pre></pre>
+    </div>
 </body>
 </html>

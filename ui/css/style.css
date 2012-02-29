@@ -83,6 +83,19 @@ hr{
 .view{
 	padding:20px;
 }
+
+
+.email_list{
+	width:500px;
+	font-size:12px;
+}
+
+.hidden_temp_for_email_lists{  		width:500px; 	}
+.hidden_temp_for_email_lists pre{	
+	font-size: 13px;
+	font-family: Verdana, Geneva, sans-serif;	
+}
+
 /*------------*/
 /* Navigation */
 /*------------*/

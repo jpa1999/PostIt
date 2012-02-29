@@ -30,7 +30,7 @@ var MainView = function( model ){
 		this.hideEverything();
 		$("." +  hash.target ).show()
 
-		if( hash != "etusivu" ){
+		if( hash != "etusivu" && hash.target != null ){
 			
 			this.getLists( 			hash.target, this.model.id )
 			this.getDates( 			hash.target, this.model.id )
@@ -53,80 +53,117 @@ var MainView = function( model ){
 		if( hash_target =="invites" ){
 			$(".register button").click( function(){ parent.sendRegister( hash_target, id ) } )	
 			$(".invite_add_email button").click( function(){ parent.addEmail( hash_target, id ) } )	
-			$(".send_one_invite button").click( function(){ parent.sendInvite( hash_target, id ) } )	
-			
 		}
 		
+		$(".send_one_invite button").click( function(){ parent.sendInvite( hash_target, id ) } )
 		$(".send_one_reminder_not_reg button").click( function(){ parent.sendReminderNotReg( hash_target, id ) } )
 		$(".send_one_reminder_reg button").click( function(){ parent.sendReminderReg( hash_target, id ) } )
 		$(".send_one_poll button").click( function(){ parent.sendPoll( hash_target, id ) } )
-	}
-	this.addEmail = function ( hash_target, id){
-		$.get( "../?q=add_to_invite&id=" +id+ "&email=" + $(".invite_add_email .email").val(),{}, function(){ window.location.reload() })
-
-	}
-	this.sendRegister = function ( hash_target, id){
-		$.get( "../?q=register&id=" +id+ "&email=" + $(".register .register_email").val(),{}, function(){ /*window.location.reload()*/  })
+		
+		
+		/*$(".invites_to_be_sended .full_list button").click(function(){ alert("Update invites") })
+		$(".reminders_not_registered_to_be_sended .full_list button").click(function(){ alert("Update not regs") })
+		$(".reminders_registered_to_be_sended .full_list button").click(function(){ alert("Update regs") })
+		$(".polls_to_be_sended .full_list button").click(function(){ alert("Update polls") })*/
+		
+		
+		var targets = [ "invites","polls", "reminders_registered", "reminders_not_registered" ]
+		while( targets.length > 0 ){  this.setButton( targets.pop(), id, parent )  }
 	}
 	
-	//Send buttons
-	this.sendInvite = function ( hash_target, id){
-		$.get( "../?q=send_invite&id=" + id,{}, function(){ window.location.reload()  })
+	this.setButton = function( target, id, parent ){
+		$("." + target + " .send_one button").click( function(){ parent.sendOne( target, id ) } )
+		$("." + target + "_to_be_sended .full_list button").click(function(){ alert("Update" + target ) })
+	}
+	this.sendOne = function( target, id ){
+		$.get( "../?q=send_one_" +target+ "&id=" + id,{}, function( data ){ alert( data ); window.location.reload()  })
+	}
+	
+		//Send buttons
+	/*this.sendInvite = function ( hash_target, id){
+		$.get( "../?q=send_invite&id=" + id,{}, function( data ){ alert( data ); window.location.reload()  })
 	}
 	this.sendReminderNotReg = function ( hash_target, id){
-		alert("sendReminderNotReg")
 		$.get( "../?q=send_reminder_not_registered&id=" + id,{}, function(){ window.location.reload()  })
 	}
 	this.sendReminderReg = function ( hash_target, id ){
-		alert("sendReminderReg")
 		$.get( "../?q=send_reminder_registered&id=" + id,{}, function(){ window.location.reload()  })
 	}
 	this.sendPoll= function ( hash_target, id ){
 		$.get( "../?q=send_poll&id=" + id,{}, function(){ window.location.reload()  })
-	}
+	}*/
 	
+	
+	
+	
+	
+	
+	
+	this.addEmail = function ( hash_target, id){
+		$.get( "../?q=add_to_invite&id=" +id+ "&email=" + $(".invite_add_email .email").val(),{}, function(){ window.location.reload() })
+	}
+	this.sendRegister = function ( hash_target, id){
+		$.get( "../?q=register&id=" +id+ "&email=" + $(".register .register_email").val(),{}, function(){ window.location.reload()  })
+	}
+
 	this.getLists = function( hash_target, id ){
 		
+		alert( "get lists" ) 
 		if( hash_target != "errors"){
 			this.loadSendLists( hash_target )
-			this.loadDate(		hash_target, id )
+			this.loadDate( hash_target, id )
 		}else{
 			$("#errors pre").load( "../../data/errors/errors.txt" );
 		}
 		
 		if( hash_target =="invites" ){
-			$("#invites_tabs .registered pre").load( 	this.basepath + "/registered/registered.txt" + this.random_string )
+			$("#invites_tabs .registered pre").load( 	"../" + this.model.paths['register'].registered + this.random_string )
 			$("#invites_tabs .unregistered pre").load(  "../?q=list_unregistered&id=" + id );
 		}
 		
 	}
 	
 	this.loadSendLists = function( target ){
-		to_be_sended_container = "#" + target + "_tabs ." + target + "_to_be_sended pre"
+		to_be_sended_container = "#" + target + "_tabs ." + target + "_to_be_sended textarea"
 		sended_container = "#" + target + "_tabs ." + target + "_sended pre"
 		
-		$( to_be_sended_container ).load( 	"../" + this.model.paths[target].to_be_sended 	+ this.random_string )
+		var main_view = this
+		$( to_be_sended_container ).load( 	"../" + this.model.paths[target].to_be_sended 	+ this.random_string,  function(){  main_view.resizeTextArea( to_be_sended_container )  } )
 		$( sended_container ).load( 		"../" + this.model.paths[target].sended 		+ this.random_string )
-		
-		//$( to_be_sended_container ).load( 	this.basepath + "/" + target + "/to_be_sended.txt" + this.random_string )
-		//$( sended_container ).load( 		this.basepath + "/" + target + "/sended.txt" + this.random_string 		)
 	
 	}
 	
+	this.resizeTextArea = function( target ){
+		$(".hidden_temp_for_email_lists pre").html(  $(target).html()  )
+		 $(target).height( $(".hidden_temp_for_email_lists").height()+20 )
+	}
+	//-----------------------------
+	// Dates
+	//-----------------------------
 	this.getDates = function( hash_target, id ){
-		parent = this
+		
+		main_view = this
+		//Reset
+		$('#' + hash_target + '_date_reset').click( function(){ main_view.resetDate( id , hash_target ) })
+		//Datepicker
 		$.datepicker.setDefaults( $.datepicker.regional[ "fi" ] );
 		$('#' + hash_target + '_date').datetimepicker( {
-   										onClose: function(dateText, inst) { 
-												$.get("../?q=set_date&id=" + id + "&date=" +dateText+ "&posting=" + hash_target) 
-										}
+   										onClose: function(date_string, inst) {  main_view.sendDate( id , hash_target, date_string ) }
 									} );
 	}
-	this.loadDate = function( hash_target, id ){
-			$.get("../?q=get_date&id=" + id + "&posting=" + hash_target,{}, function( data ){ $('#' + hash_target + '_date').val( data ) }) 
-			
+	this.sendDate = function( id, target, date_string ){
+		$.get("../?q=set_date&id=" + id + "&date=" + date_string + "&posting=" + target, function(data){ ( data>0 )? alert("Aika vaihdettu") : alert("Vaihto epäonnistui"); } ) 
+	}
+	this.resetDate = function( id, target ){
+		$.get("../?q=reset_date&id=" + id + "&posting=" + target, function(){ window.location.reload() } )
+	}
+	this.loadDate = function( target, id ){
+		$.get("../?q=get_date&id=" + id + "&posting=" + target,{}, function( data ){ $('#' + target + '_date').val( data ) }) 
 	}
 	
+	//--------------------------------
+	// Navi
+	//---------------------------------
 	this.highlightNavi = function( target ){
 		$(".navigation ul li a").removeClass("selected_li")
 		$(".navigation ul li a." + target ).addClass("selected_li")
@@ -138,18 +175,21 @@ var MainView = function( model ){
 		}
 	}
 	
+	//--------------------------------
+	// Buttons
+	//---------------------------------
 	this.initButtons = function(){
-		
 		var main_view = this
-		var targets = [ "invites", "register", "polls", "reminders_registered", "reminders_not_registered" ]
 		
-		for(var target in targets){
-			var current_target = targets[ target ]
-			$("a." + current_target ).click( function(){  main_view.changeView( current_target ) } )
-		}
+		var targets = [ "invites", "register", "polls", "reminders_registered", "reminders_not_registered","errors" ]
+		while( targets.length > 0 ){ this.setNaviLink( targets.pop() ) }
 		$("#event_selection select").change( function( event ){ main_view.changeEvent() }  );
-
 	}
+	
+	this.setNaviLink = function( target ){
+		$("a." + target ).click( function(){  main_view.changeView( target ) } )
+	}
+	
 	this.changeView = function( view_name ){
 		this.changeHash( view_name + "-show-" + this.model.id )
 	}

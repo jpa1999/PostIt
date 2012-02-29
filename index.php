@@ -41,9 +41,11 @@ if( $_GET['q'] == "get_date" ){
 	echo file_get_contents(  $paths[ $posting ]['date']  ) ;
 }
 if( $_GET['q'] == "set_date" ){
-	file_put_contents( $paths[ $posting ]['date'], $_GET['date'] );
+	echo file_put_contents( $paths[ $posting ]['date'], $_GET['date'] );
 }
-
+if( $_GET['q'] == "reset_date" ){
+	resetDate ( $paths[ $posting ]['date'] );
+}
 //--------------------------
 // Single add mail
 //---------------------------
@@ -56,27 +58,29 @@ if( $_GET['q'] == "remove_from_invite" ){
 //-----------------------------
 // Send invite
 //-----------------------------
-if( $_GET['q'] == "send_invite" ){
-	if(  !dateNotGone( $paths["invites"]['date'] ) ) {
-		$sended_mail = sendOneEmail(  $paths["invites"]['to_be_sended'], $paths["invites"]['sended']  );
+if( $_GET['q'] == "send_one_invites" ){
+	
+	$date_path = $paths["invites"]['date'];
+	if(  !dateNotGone($date_path) && dateActive($date_path) ) {
 		
+		$sended_mail = sendOneEmail(  $paths["invites"]['to_be_sended'], $paths["invites"]['sended']  );
 		if( !empty($sended_mail) ){
-			echo "AD to registered";
 			addLine(  $paths["reminders_not_registered"]['to_be_sended'], $sended_mail  );
+			echo "Sended one mail";
 		}
 	}else{
-		echo "Send date in future";	
+		echo "Send date in future or Date not active - no mail send";	
 	}
 }
 //--------------------------
 // Send reminder
 //---------------------------
-if( $_GET['q'] == "send_reminder_registered" ){
+if( $_GET['q'] == "send_one_reminders_registered" ){
 	if(  !dateNotGone( $paths["reminders_registered"]['date'] ) ) {
 		sendOneEmail( $paths["reminders_registered"]['to_be_sended'], 		$paths["reminders_registered"]['sended'] );
 	}
 }
-if( $_GET['q'] == "send_reminder_not_registered" ){
+if( $_GET['q'] == "send_one_reminders_not_registered" ){
 	if(  !dateNotGone( $paths["reminders_not_registered"]['date'] ) ) {
 		sendOneEmail( $paths["reminders_not_registered"]['to_be_sended'], 	$paths["reminders_not_registered"]['sended'] );
 	}
@@ -85,7 +89,7 @@ if( $_GET['q'] == "send_reminder_not_registered" ){
 //--------------------------
 // Send Poll
 //---------------------------
-if( $_GET['q'] == "send_poll" ){
+if( $_GET['q'] == "send_one_polls" ){
 	if(  !dateNotGone( $paths["polls"]['date'] ) ) {
 		sendOneEmail( $paths["polls"]['to_be_sended'], $paths["polls"]['sended'] );
 	}
@@ -225,26 +229,34 @@ function sendOneEmail( $source_path, $sended_path ){
 //-----------
 // Date
 //-----------
+function dateActive( $date_file ){
+	if (  file_exists( $date_file )  ){
+		$date_string = file_get_contents( $date_file );
+		if( empty( $date_string ) ){
+			return false;	
+		}else{
+			return true;	
+		}
+	}else{
+		return false;
+	}
+}
 function dateNotGone( $date_file ){
 	$date_string = file_get_contents( $date_file );
 	$timestamp = changeDatetimeToTime( $date_string );
-	
-	echo $date_string . " | Date bigger than now: " . ($timestamp > time()) ."<br>";
-
-	
-	if( $timestamp > time() ){
-		return true;	
-	}else{
-		return false;	
-	}
+	return ( $timestamp > time() )? true : false;
+	//echo $date_string . " | Date bigger than now: " . ($timestamp > time()) ."<br>";	
 }
+
 function changeDatetimeToTime( $date_fi ){
 	$space_explode 	= explode( " ", $date_fi );
 	$date_explode 	= explode( ".", $space_explode[0] );
 	$time_explode 	= explode( ":", $space_explode[1] );
 	return mktime( (int)$time_explode[0],(int)$time_explode[1],0, (int)$date_explode[1],(int)$date_explode[0],(int)$date_explode[2] );
 }
-
+function resetDate( $date_file ){
+	unlink ( $date_file );	
+}
 //----------
 // Lines
 //----------

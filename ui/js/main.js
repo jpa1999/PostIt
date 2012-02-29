@@ -33,7 +33,6 @@ var Application = function( parent ){
 	this.updateID = function(){
 		this.hash = new Hash()
 		this.id = this.hash.parameter
-		alert( "ID" + this.id )
 		this.loadPathsAndFolders()
 	}
 	
@@ -41,7 +40,6 @@ var Application = function( parent ){
 		var application = this
 		$.getJSON('../?q=get_paths&id=' + this.id, function( data ){ application.pathsLoaded( data ) })
 		$.getJSON( "../?q=list_created_events",   function( data ){  application.view.populateEventDropDown( data.data )  })
-		alert("Loaded paths ansd folders " + this.id )
 	}
 	
 	this.pathsLoaded = function( data ){
@@ -53,8 +51,6 @@ var Application = function( parent ){
 		return this.parent.checkHash()	
 	}
 	
-	
-
 	this.init()	
 }
 
