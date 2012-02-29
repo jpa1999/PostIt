@@ -1,7 +1,12 @@
 <?php
 $data_path = "../data/";
-$id 		= cleanString( $_GET['id'] );
-$posting 	= cleanString( $_GET['posting'] );
+
+$id 		= ( !empty( $_POST['id'] ) )? $_POST['id'] : $_GET['id'];
+$id 		= cleanString( $id );
+
+$posting 	= ( !empty( $_POST['posting'] ) )? $_POST['posting'] : $_GET['posting'];
+$posting 	= cleanString( $posting );
+
 $state 		= cleanString( $_GET['state'] );
 $email 		= cleanString( $_GET['email'] );
 $q 			= cleanString( $_GET['q'] );
@@ -95,6 +100,13 @@ if( $_GET['q'] == "send_one_polls" ){
 	}
 }
 //--------------------------
+// List update
+//--------------------------
+if( $_POST['q'] == "update_list" ){
+	file_put_contents( $paths[ $posting ]['to_be_sended'], $_POST['list'] );
+	echo "List updated: " . $paths[ $posting ]['to_be_sended'];
+}
+//--------------------------
 // Register
 //---------------------------
 if( $_GET['q'] == "register" ){
@@ -138,7 +150,7 @@ if( $_GET['q'] == "add_new_event" ){
 		
 		mkdir( $path );
 		//Invite
-		mkdir( $path . "/invite"  );
+		mkdir( $path . "/invites"  );
 		file_put_contents( $paths["invites"]['date'], "" );
 		file_put_contents( $paths["invites"]['sended'], "" );
 		file_put_contents( $paths["invites"]['to_be_sended'], "" );
@@ -156,7 +168,7 @@ if( $_GET['q'] == "add_new_event" ){
 		file_put_contents( $paths["reminders_registered"]['sended'], "" );
 		file_put_contents( $paths["reminders_registered"]['to_be_sended'], "" );
 		//Poll
-		mkdir( $path . "/poll"  );
+		mkdir( $path . "/polls"  );
 		file_put_contents( $paths["polls"]['sended'], "" );
 		file_put_contents( $paths["polls"]['to_be_sended'], "" );
 		

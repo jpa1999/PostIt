@@ -90,7 +90,7 @@ hr{
 	font-size:12px;
 }
 
-.hidden_temp_for_email_lists{  		width:500px; 	}
+.hidden_temp_for_email_lists{ display:none; width:500px; 	}
 .hidden_temp_for_email_lists pre{	
 	font-size: 13px;
 	font-family: Verdana, Geneva, sans-serif;	

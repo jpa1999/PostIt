@@ -66,7 +66,9 @@
                         
                         	<!-- SEND DATE -->
                             <div class="box">
-                        		Kutsujen lähetysaika: <input type="text" name="invites_date" id="invites_date"  class="date"/> <button id="invites_date_reset">Poista aika ( älä lähetä )</button>
+                        		Kutsujen lähetysaika: 
+                                <input type="text" name="invites_date" id="invites_date"  class="date"/>
+                                <button id="date_reset">Poista aika ( älä lähetä )</button>
                             </div>
                             <!-- Register -->
                             <div class="invite_add_email box">
@@ -76,7 +78,7 @@
                             <div class="register box">
                             	Rekisteröi sähköpostiosoite: <input type="text" name="email" id="register_email"  class="register_email"/> <button>Lähetä</button>
                             </div>
-                             <!-- Send one email-->
+                            <!-- Send one email-->
                             <div class="send_one box">
                             	<button>Lähetä yksi email</button>
                             </div>
@@ -99,14 +101,16 @@
                 <h1>Muistutukset rekisteröitymättömille</h1>
                 <div id="reminders_not_registered_tabs">
                         <ul>
-                            <li><a href="#reminders_not_reg_to_be_sended">Lähtevät</a></li>
-                            <li><a href="#reminders_not_reg_sended">Lähetetyt</a></li>
+                            <li><a href="#reminders_not_registered_to_be_sended">Lähtevät</a></li>
+                            <li><a href="#reminders_not_registered_sended">Lähetetyt</a></li>
                         </ul>
                         
-                        <div id="reminders_not_reg_to_be_sended" class="reminders_not_reg_to_be_sended">
+                        <div id="reminders_not_registered_to_be_sended" class="reminders_not_registered_to_be_sended">
                         	<!-- SEND DATE -->
                        		<div class="box">
-                            	Muistutuksen lähetysaika rekisteröitymättömille: <input type="text" name="invites_date" id="reminders_not_registered_date"  class="date"/>
+                            	Muistutuksen lähetysaika rekisteröitymättömille: 
+                                <input type="text" name="invites_date" id="reminders_not_registered_date"  class="date"/>
+                                <button id="date_reset">Poista aika ( älä lähetä )</button>
                             </div>
                             <!-- Send one email-->
                             <div class="send_one box">
@@ -118,7 +122,7 @@
                             	<textarea class="email_list" ></textarea>
                             </div>
                         </div>
-                        <div id="reminders_not_reg_sended" class="reminders_not_registered_sended"><pre></pre></div>
+                        <div id="reminders_not_registered_sended" class="reminders_not_registered_sended"><pre></pre></div>
                  </div>
             </div>
             
@@ -130,14 +134,16 @@
                 <h1>Muistutukset jo rekisteröityneille</h1>
                 <div id="reminders_registered_tabs">
                 		<ul>
-                            <li><a href="#reminders_reg_to_be_sended">Lähtevät</a></li>
-                            <li><a href="#reminders_reg_sended">Lähetetyt</a></li>
+                            <li><a href="#reminders_registered_to_be_sended">Lähtevät</a></li>
+                            <li><a href="#reminders_registered_sended">Lähetetyt</a></li>
                         </ul>
                         
-                        <div id="reminders_reg_to_be_sended" class="reminders_registered_to_be_sended">
+                        <div id="reminders_registered_to_be_sended" class="reminders_registered_to_be_sended">
                          	<!-- SEND DATE -->
                        		<div class="box">
-                        		Muistutuksen lähetysaika rekisteröityneille: <input type="text" name="invites_date" id="reminders_registered_date" class="date"/>
+                        		Muistutuksen lähetysaika rekisteröityneille:
+                                <input type="text" name="invites_date" id="reminders_registered_date" class="date"/>
+                                <button id="date_reset">Poista aika ( älä lähetä )</button>
                             </div>
                             <!-- Send one email-->
                             <div class="send_one box">
@@ -150,7 +156,7 @@
                             </div>
                         </div>
                         
-                        <div id="reminders_reg_sended" class="reminders_registered_sended">
+                        <div id="reminders_registered_sended" class="reminders_registered_sended">
                         	<pre></pre>
                         </div>
                  </div>
@@ -170,7 +176,9 @@
                         <div id="polls_to_be_sended" class="polls_to_be_sended">
                         	 <!-- SEND DATE -->
                             <div class="box">
-                                Gallup kutusujen lähetysaika: <input type="text" name="polls_date" id="polls_date"  class="date"/>
+                                Gallup kutusujen lähetysaika:
+                                <input type="text" name="polls_date" id="polls_date"  class="date"/>
+                                <button id="date_reset">Poista aika ( älä lähetä )</button>
                             </div>
                              <!-- Send one email-->
                             <div class="send_one box">
