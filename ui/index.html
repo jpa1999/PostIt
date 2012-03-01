@@ -35,25 +35,46 @@
                 </select>
             </form>
         </div>
+        
         <div class="event_item">
             
-            <div class="event_title"><!-- This will be replaced from js --></div>
-            <div class="navigation">
-            	<ul>
-                    <li><a class="invites">Kutsut</a></li>
-                    <li><a class="reminders_not_registered">Muistutus - rekisteröitymättömät</a></li>
-                    <li><a class="reminders_registered">Muistutus - rekisteröityneet</a></li>
-                    <li><a class="polls">Kysely</a></li>
-                    <li><a class="errors">Virheloki</a></li>
-                </ul>
-                <div class="clear"></div>
+            <div class="header">
+                <div class="event_title"><!-- This will be replaced from js --></div>
+                
+                <div class="quick_view">
+                	<div class="item invites first">
+                    	<div class="title">Kutsut</div>
+                        <div class="date">12.2.</div>
+                    </div>
+                    <div class="item reminder_registered">
+                    	<div class="title">Muistutus rekisteröityneille</div>
+                        <div class="date">16.2.</div>
+                    </div>
+                    <div class="item reminder_not_registered">
+                    	<div class="title">Muistutus rekisteröityneille</div>
+                        <div class="date">16.2.</div>
+                    </div>
+                    <div class="item gallup">
+                    	<div class="title">Gallup</div>
+                        <div class="date">22.2</div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="navigation">
+                    <ul>
+                        <li><a class="invites">Kutsut</a></li>
+                        <li><a class="reminders_not_registered">Muistutus - rekisteröitymättömät</a></li>
+                        <li><a class="reminders_registered">Muistutus - rekisteröityneet</a></li>
+                        <li><a class="polls">Gallup</a></li>
+                        <li><a class="errors">Virheloki</a></li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
             </div>
-            
             <!------------------------------------------------->
             <!-- INVITES & REGISTERED                        -->
             <!------------------------------------------------->
             <div id="invites" class="view invites">
-                <h1>Kutsut</h1>
                 <div id="invites_tabs">
                         <ul>
                             <li><a href="#invites_to_be_sended">Lähtevät</a></li>
@@ -98,7 +119,6 @@
             <!-- REMINDERS NOT YET REGISTERED                -->
             <!------------------------------------------------->
             <div id="reminders_not_registered" class="view reminders_not_registered">
-                <h1>Muistutukset rekisteröitymättömille</h1>
                 <div id="reminders_not_registered_tabs">
                         <ul>
                             <li><a href="#reminders_not_registered_to_be_sended">Lähtevät</a></li>
@@ -131,7 +151,6 @@
             <!-- REMINDERS REGISTERED                        -->
             <!------------------------------------------------->
             <div id="reminders_registered"  class="view reminders_registered">
-                <h1>Muistutukset jo rekisteröityneille</h1>
                 <div id="reminders_registered_tabs">
                 		<ul>
                             <li><a href="#reminders_registered_to_be_sended">Lähtevät</a></li>
@@ -167,7 +186,6 @@
             <!-- GALLUP                                      -->
             <!------------------------------------------------->
             <div id="polls" class="view polls">
-                <h1>Gallup kutsut</h1>
                 <div id="polls_tabs">
                         <ul>
                             <li><a href="#polls_to_be_sended">Lähtevät</a></li>
@@ -200,7 +218,6 @@
             <!-- ERRORS                                      -->
             <!------------------------------------------------->
         	<div id="errors" class="view errors">
-                <h1>Virhe loki</h1>
                 <pre></pre>
             </div>
             

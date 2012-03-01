@@ -51,24 +51,24 @@ var MainView = function( model ){
 		}
 		this.checkForErrors( hash.status,hash.parameter )
 		this.highlightNavi( hash.target )
-		
 	}
-	
+
 	//------------------------------------
 	// BUTTONS
 	//------------------------------------
 	this.initButtons = function( hash_target, id ){
 		parent = this
 		if( hash_target =="invites" ){
-			$(".register button").click( function(){ parent.sendRegister( hash_target, id ) } )	
-			$(".invite_add_email button").click( function(){ parent.addEmail( hash_target, id ) } )	
+			$(".register button").off( "click" )
+			$(".register button").on( "click", function(){ parent.sendRegister( hash_target, id ) } )
+			$(".invite_add_email button").off( "click" )
+			$(".invite_add_email button").on( "click", function(){ parent.addEmail( hash_target, id ) } )	
 		}
 		
 		var targets = [ "invites","polls", "reminders_registered", "reminders_not_registered" ]
 		while( targets.length > 0 ){  this.setButton( targets.pop(), id, parent )  }
 	}
 	this.setButton = function( target, id, parent ){
-		alert("SET BUTTON")
 		$("." + target + " .send_one button").off( "click" )
 		$("." + target + " .send_one button").on( "click", function(){ parent.sendOne( target, id ) 	})
 		
@@ -134,7 +134,8 @@ var MainView = function( model ){
 		
 		main_view = this
 		//Reset
-		$('#' + hash_target + ' .date_reset').click( function(){ main_view.resetDate( id , hash_target ) })
+		$('#' + hash_target + ' .date_reset').off( "click" )
+		$('#' + hash_target + ' .date_reset').on( "click", function(){ main_view.resetDate( id , hash_target ) })
 		//Datepicker
 		$.datepicker.setDefaults( $.datepicker.regional[ "fi" ] );
 		$('#' + hash_target + '_date').datetimepicker( {
@@ -178,7 +179,8 @@ var MainView = function( model ){
 	}
 	
 	this.setNaviLink = function( target ){
-		$("a." + target ).click( function(){  main_view.changeView( target ) } )
+		$("a." + target ).off( "click" )
+		$("a." + target ).on( "click", function(){  main_view.changeView( target ) } )
 	}
 	
 	this.changeView = function( view_name ){
@@ -198,8 +200,14 @@ var MainView = function( model ){
 		
 		$("#event_selection select").html( 		$.render( [{}],"event_dropdown_header" )  	)
 		$("#event_selection select").append( 	$.render( data, "event_dropdown_item" )  	)
+		
+		//set selected option
+		$("#event_selection option[value=" +this.model.id+ "]").attr('selected', 'selected')
+
 
 	}
+		
+
 	
 	this.init()
 	

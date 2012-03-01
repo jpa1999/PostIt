@@ -1,11 +1,5 @@
 <?php
 
-define('WP_USE_THEMES', false);
-require_once('../../../../wp-blog-header.php');
-header("HTTP/1.1 200 OK");
-header("Status: 200 All rosy") ;
-
-
 $data_path = "../data/";
 
 $id 		= ( !empty( $_POST['id'] ) )? $_POST['id'] : $_GET['id'];
@@ -16,9 +10,16 @@ $posting 	= cleanString( $posting );
 
 $state 		= cleanString( $_GET['state'] );
 $email 		= cleanString( $_GET['email'] );
-$q 			= cleanString( $_GET['q'] );
+$q 			= ( !empty( $_POST['q'] ) )? $_POST['q'] : $_GET['q'];
 
 
+//---------------------------------
+// Bind to Wordpress
+//---------------------------------
+define('WP_USE_THEMES', false);
+require_once('../../../../wp-blog-header.php');
+header("HTTP/1.1 200 OK");
+header("Status: 200 All rosy") ;
 //---------------------------------
 // Get data from wordpress page
 //---------------------------------
@@ -74,31 +75,34 @@ $paths = array(
 				);
 
 
-if( $_GET['q'] == "get_event_name" ){
+if( $q == "get_event_name" ){
 	echo ( $data_items["title"] );
 }
-if( $_GET['q'] == "get_date" ){
-	echo file_get_contents(  $paths[ $posting ]['date']  ) ;
+//--------------------------
+// Dates
+//---------------------------
+if( $q == "get_date" ){
+	echo ( file_exists( $paths[ $posting ]['date'] ) )? file_get_contents(  $paths[ $posting ]['date']  ) : "";
 }
-if( $_GET['q'] == "set_date" ){
+if( $q == "set_date" ){
 	echo file_put_contents( $paths[ $posting ]['date'], $_GET['date'] );
 }
-if( $_GET['q'] == "reset_date" ){
+if( $q == "reset_date" ){
 	resetDate ( $paths[ $posting ]['date'] );
 }
 //--------------------------
 // Single add mail
 //---------------------------
-if( $_GET['q'] == "add_to_invite" ){
+if( $q == "add_to_invite" ){
 	addLine(  $paths["invites"]['to_be_sended'], $email  );
 }
-if( $_GET['q'] == "remove_from_invite" ){
+if( $q == "remove_from_invite" ){
 	removeLine(  $paths["invites"]['to_be_sended'], $email  );
 }
 //-----------------------------
 // Send invite
 //-----------------------------
-if( $_GET['q'] == "send_one_invites" ){
+if( $q == "send_one_invites" ){
 	
 	$date_path = $paths["invites"]['date'];
 	if(  !dateNotGone($date_path) && dateActive($date_path) ) {
@@ -186,7 +190,7 @@ if( $_GET['q'] == "add_new_event" ){
 		mkdir( $path );
 		//Invite
 		mkdir( $path . "/invites"  );
-		file_put_contents( $paths["invites"]['date'], "" );
+		//file_put_contents( $paths["invites"]['date'], "" );
 		file_put_contents( $paths["invites"]['sended'], "" );
 		file_put_contents( $paths["invites"]['to_be_sended'], "" );
 		//Registered
@@ -194,12 +198,12 @@ if( $_GET['q'] == "add_new_event" ){
 		file_put_contents( $paths["register"]['registered'], "" );
 		//Reminder not registered
 		mkdir( $path . "/reminders_not_registered"  );
-		file_put_contents( $paths["reminders_not_registered"]['date'], "" );
+		//file_put_contents( $paths["reminders_not_registered"]['date'], "" );
 		file_put_contents( $paths["reminders_not_registered"]['sended'], "" );
 		file_put_contents( $paths["reminders_not_registered"]['to_be_sended'] , "" );
 		//Reminder registered
 		mkdir( $path . "/reminders_registered"  );
-		file_put_contents( $paths["reminders_registered"]['date'], "" );
+		//file_put_contents( $paths["reminders_registered"]['date'], "" );
 		file_put_contents( $paths["reminders_registered"]['sended'], "" );
 		file_put_contents( $paths["reminders_registered"]['to_be_sended'], "" );
 		//Poll
