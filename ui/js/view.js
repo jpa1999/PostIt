@@ -12,8 +12,14 @@ var MainView = function( model ){
 	this.init = function(){}
 
 	this.update = function(){
+		
+		this.updateTitle()
 		this.changePage()
 		this.initNavButtons()
+	}
+	
+	this.updateTitle = function(){
+		$(".event_title").load( "../?q=get_event_name&id=" + this.model.id )	
 	}
 	
 	this.changePage = function(){
@@ -62,8 +68,12 @@ var MainView = function( model ){
 		while( targets.length > 0 ){  this.setButton( targets.pop(), id, parent )  }
 	}
 	this.setButton = function( target, id, parent ){
-		$("." + target + " .send_one button").click( function(){ parent.sendOne( target, id ) } )
-		$("." + target + "_to_be_sended .full_list button").click(function(){ parent.saveUpdatedList( target, id ) })
+		alert("SET BUTTON")
+		$("." + target + " .send_one button").off( "click" )
+		$("." + target + " .send_one button").on( "click", function(){ parent.sendOne( target, id ) 	})
+		
+		$("." + target + "_to_be_sended .full_list button").off("click")
+		$("." + target + "_to_be_sended .full_list button").on("click", function(){ parent.saveUpdatedList( target, id ) 	})
 	}
 	this.sendOne = function( target, id ){
 		$.get( "../?q=send_one_" +target+ "&id=" + id,{}, function( data ){ alert( data ); window.location.reload()  })
@@ -184,10 +194,10 @@ var MainView = function( model ){
 	this.populateEventDropDown = function( data ){
 		
 		$.template("event_dropdown_header","<option value='0'>Valitse tapahtuma:</option>")
-		$.template("event_dropdown_item","<option value='{{=folder_id}}'>{{=folder_id}}</option>\n")
+		$.template("event_dropdown_item","<option value='{{=folder_id}}'>{{=folder_name}}</option>\n")
 		
 		$("#event_selection select").html( 		$.render( [{}],"event_dropdown_header" )  	)
-		$("#event_selection select").append( 	$.render(data, "event_dropdown_item" )  	)
+		$("#event_selection select").append( 	$.render( data, "event_dropdown_item" )  	)
 
 	}
 	

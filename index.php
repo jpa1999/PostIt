@@ -1,4 +1,11 @@
 <?php
+
+define('WP_USE_THEMES', false);
+require_once('../../../../wp-blog-header.php');
+header("HTTP/1.1 200 OK");
+header("Status: 200 All rosy") ;
+
+
 $data_path = "../data/";
 
 $id 		= ( !empty( $_POST['id'] ) )? $_POST['id'] : $_GET['id'];
@@ -11,6 +18,33 @@ $state 		= cleanString( $_GET['state'] );
 $email 		= cleanString( $_GET['email'] );
 $q 			= cleanString( $_GET['q'] );
 
+
+//---------------------------------
+// Get data from wordpress page
+//---------------------------------
+if( !empty( $id )){ 
+	// Get mecessary properties from post to single array
+	// So you do not have to remember if they come from page or meta 
+	$page = get_page( $id );
+	
+	$data_items = array( 
+						"type"					=> 	$page->post_type,
+						"parent"				=> 	$page->post_parent,
+						"title" 				=> 	$page->post_title,
+						"ingress" 				=> 	$page->post_excerpt,
+						"content" 				=> 	$page->post_content,
+						"image" 				=>	get_post_meta( $id, "event_image", true ),
+						"location"				=>	get_post_meta( $id, "event_location", true ),
+						"extra_info"			=>	get_post_meta( $id, "event_extra_info", true ),
+						"gallup_url"			=>	get_post_meta( $id, "event_gallup_url", true ),
+						"list_events_boolean"	=>	get_post_meta( $id, "listaa_tapahtumat", true),
+						"datetime"				=>	get_post_meta( $id, "event_datetime", true ),
+						"registration_end_date"	=>	get_post_meta( $id, "event_registration_end_date", true )
+						 );
+}
+//--------------------------
+// PATHS
+//---------------------------
 $path = $data_path . $id;
 
 $paths = array( 
@@ -39,9 +73,10 @@ $paths = array(
 								)
 				);
 
-//--------------------------
-// Dates
-//---------------------------
+
+if( $_GET['q'] == "get_event_name" ){
+	echo ( $data_items["title"] );
+}
 if( $_GET['q'] == "get_date" ){
 	echo file_get_contents(  $paths[ $posting ]['date']  ) ;
 }
@@ -185,12 +220,20 @@ if( $_GET['q'] == "list_created_events" ){
 	
 	$json = '{ "data":[';
 	
+	// Whole list could be retrieved from Wordpress
+	// but for now, to keep bindngs to wordpress 
+	// as compact as possible we only get title from wordpress
 	if ($handle = opendir( $data_path )) {
 		while(  false !== ($entry = readdir($handle))  ){
+			
+			$page = get_page( $entry );
+			$folder_name = $page->post_title;
+			
        		$filetype = filetype( $data_path.$entry );
 			if( $filetype== "dir" && $entry!="." && $entry!=".." && $entry!="errors" ){
-				$json .= '{"folder_id":"' . $entry . '"},';
+				$json .= '{"folder_id":"' . $entry . '","folder_name" :"' . $folder_name . '" },';
 			}
+			
     	}
 	}
 	
