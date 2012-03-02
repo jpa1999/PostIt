@@ -66,7 +66,11 @@ var MainView = function( model ){
 		}
 		
 		var targets = [ "invites","polls", "reminders_registered", "reminders_not_registered" ]
-		while( targets.length > 0 ){  this.setButton( targets.pop(), id, parent )  }
+		while( targets.length > 0 ){  
+			target = targets.pop()
+			this.loadDate( target, id )
+			this.setButton( target, id, parent )  
+		}
 	}
 	this.setButton = function( target, id, parent ){
 		$("." + target + " .send_one button").off( "click" )
@@ -101,7 +105,7 @@ var MainView = function( model ){
 		
 		if( hash_target != "errors"){
 			this.loadSendLists( hash_target )
-			this.loadDate( hash_target, id )
+			//this.loadDate( hash_target, id )
 		}else{
 			$("#errors pre").load( "../../data/errors/errors.txt" );
 		}
@@ -143,14 +147,25 @@ var MainView = function( model ){
 									} );
 	}
 	this.sendDate = function( id, target, date_string ){
-		$.get("../?q=set_date&id=" + id + "&date=" + date_string + "&posting=" + target, function(data){ ( data>0 )? alert("Aika vaihdettu") : alert("Vaihto epäonnistui"); } ) 
+		url = "../?q=set_date&id=" + id + "&date=" + date_string + "&posting=" + target
+		$.get( url, this.onDateSend ) 
+	}
+	this.onDateSend = function( data ){
+		( data>0 )? alert("Aika vaihdettu") : alert("Vaihto epäonnistui"); 
+		window.location.reload()
 	}
 	this.resetDate = function( id, target ){
-		alert("asdasd")
 		$.get("../?q=reset_date&id=" + id + "&posting=" + target, function(){ window.location.reload() } )
 	}
 	this.loadDate = function( target, id ){
-		$.get("../?q=get_date&id=" + id + "&posting=" + target,{}, function( data ){ $('#' + target + '_date').val( data ) }) 
+		$.get("../?q=get_date&id=" + id + "&posting=" + target,{}, function( data ){ 
+																						$('#' + target + '_date').val( data );
+																						if( data ){
+																							$(".quick_view ." +target+ ".item .date").html( data.split(".")[0] +"."+data.split(".")[1] +"." )
+																						}else{
+																							$(".quick_view ." +target+ ".item .date").html( "-" )
+																						}
+																					}) 
 	}
 	
 	//--------------------------------

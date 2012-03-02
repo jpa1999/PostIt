@@ -67,6 +67,12 @@ hr{
 	text-align:left;
 	position:relative;
 }
+.logo{
+	position:absolute;
+	top:10px;
+	left:10px;
+	z-index:2px;
+}
 .view{
 	padding:20px;
 	margin:20px;
@@ -95,9 +101,13 @@ hr{
 }
 
 .event_title{
-	color:black;
+	max-width:370px;
+	
+	color:#235e77;
 	margin-top:25px;
 	margin-left:20px;
+	margin-right:0px;
+	margin-bottom:30px;
 	font-size:2.2em;
 	/*text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.15);*/
 	float:left;
@@ -108,14 +118,15 @@ hr{
 	background-color:#FBFDFF;
 	
 	padding:10px;
-	padding-right:25px;
-	padding-left:25px;
+	padding-right:20px;
+	padding-left:20px;
 	
 	border-radius: 10px;
 	box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.20),
 				0px 0px 5px rgba(0, 0, 0, 0.10),
 				0px -1px 0px rgba(255, 255, 255, 0.3);
-				
+	
+	text-shadow: 0px 1px 0px white;
 	border: 4px solid #419ab7;
 }
 
@@ -163,7 +174,7 @@ hr{
 	font-size:10px;
 }
 .quick_view .item .date{
-	color:black;
+	color:#235e77;
 	font-size:16px;
 	font-weight:bold;
 }

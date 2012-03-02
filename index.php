@@ -12,7 +12,6 @@ $state 		= cleanString( $_GET['state'] );
 $email 		= cleanString( $_GET['email'] );
 $q 			= ( !empty( $_POST['q'] ) )? $_POST['q'] : $_GET['q'];
 
-
 //---------------------------------
 // Bind to Wordpress
 //---------------------------------
@@ -20,6 +19,10 @@ define('WP_USE_THEMES', false);
 require_once('../../../../wp-blog-header.php');
 header("HTTP/1.1 200 OK");
 header("Status: 200 All rosy") ;
+
+
+getEventsFromWordpress( $data_path );
+
 //---------------------------------
 // Get data from wordpress page
 //---------------------------------
@@ -179,7 +182,7 @@ if( $_GET['q'] == "list_unregistered" ){
 //--------------------------
 // Create new event files
 //---------------------------
-if( $_GET['q'] == "add_new_event" ){
+function add_new_event( $id, $path, $paths ){
 	
 	if( !empty( $id ) ){
 		
@@ -220,7 +223,7 @@ if( $_GET['q'] == "add_new_event" ){
 //--------------------------
 // List folders
 //---------------------------
-if( $_GET['q'] == "list_created_events" ){
+if( $q == "list_created_events" ){
 	
 	$json = '{ "data":[';
 	
@@ -246,8 +249,25 @@ if( $_GET['q'] == "list_created_events" ){
 	
 	echo $json;
 
+}
+
+function getEventsFromWordpress( $data_path ){
+	
+	$event_pages_args = array( 'post_type' => 'tapahtumat', 'post_parent' => '0' );
+	$event_pages = get_posts( $event_pages_args );	
+	
+	foreach( $event_pages as $event_page ){
+		
+		if( !file_exists( $data_path . $event_page->ID ) ){
+			createNewEvent()	
+		}
+		
+	}
+	
+	print_r( $event_pages );
 	
 }
+
 //--------------------------
 // Paths
 //---------------------------
