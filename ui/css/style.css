@@ -39,11 +39,35 @@ button{
 
 
 input{
-	padding:7px;
+	padding:10px;
 	border:thin solid #a6a6a6;
 	
-	-moz-border-radius: 3px;
-	border-radius: 3px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+}
+.view button{
+	color:white;
+	/*background-color:#419ab7;*/
+	background-color:#8bc03e;
+	padding:10px;
+	padding-right:10px;
+	padding-left:10px;
+	
+	margin-left:10px;
+	border: 0px solid rgba(0, 0, 0, 0.20);
+	text-shadow: 1px 1px 0px  rgba(0, 0, 0, 0.10);
+	
+	/*box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.10) inset,
+				1px 1px 1px rgba(255, 255, 255, 0.20) inset,
+				0px 0px 2px rgba(0, 0, 0, 0.20);*/
+	
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	
+}
+
+.view button.date_reset{
+	float:right;
 }
 
 pre{
@@ -130,6 +154,18 @@ hr{
 	border: 4px solid #419ab7;
 }
 
+.full_list button{
+	float:right;
+}
+
+button>img{
+	float:left;
+	margin-right:10px;
+}
+button>div{
+	float:left;
+	padding-top:3px;
+}
 .email_list{
 	width:500px;
 	font-size:12px;
@@ -163,7 +199,7 @@ hr{
 	-moz-border-radius: 5px;
 	border-radius: 10px;
 
-	background-image: url( ../img/grey_gradient_rotated.jpg);
+	/*background-image: url( ../img/grey_gradient_rotated.jpg);*/
 	background-repeat:repeat-x;
 	
 	border: 4px solid #419ab7;
@@ -246,6 +282,7 @@ hr{
 	border: 1px white solid !important;
 	padding-right:25px!important;
 	padding-left:25px!important;
+	text-shadow: none !important;;
 }
 
 .navigation ul li a:hover{
@@ -257,11 +294,14 @@ hr{
 	background-color: #CCC;
 }
 
+
+
 /*-----------------------------------------------*/
 .box{
 	border: 1px solid grey;
 	padding:20px;
 	margin:10px;
+	
 }
 
 input.date{

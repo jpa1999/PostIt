@@ -20,9 +20,6 @@ require_once('../../../../wp-blog-header.php');
 header("HTTP/1.1 200 OK");
 header("Status: 200 All rosy") ;
 
-
-getEventsFromWordpress( $data_path );
-
 //---------------------------------
 // Get data from wordpress page
 //---------------------------------
@@ -49,34 +46,42 @@ if( !empty( $id )){
 //--------------------------
 // PATHS
 //---------------------------
-$path = $data_path . $id;
+$paths = getPaths( $id, $data_path );
 
-$paths = array( 
-				"invites" => array( 
-									"date" => 			$path . "/invites/date.txt",
-									"sended" => 		$path . "/invites/sended.txt",
-									"to_be_sended" =>  	$path . "/invites/to_be_sended.txt"
-								), 
-				"register" => array( 
-									"registered" => 	$path . "/registered/registered.txt",
-								), 
-				"reminders_not_registered" => array( 
-									"date" => 			$path . "/reminders_not_registered/date.txt",
-									"sended" => 		$path . "/reminders_not_registered/sended.txt",
-									"to_be_sended" =>  	$path . "/reminders_not_registered/to_be_sended.txt"
-								), 
-				"reminders_registered" => array( 
-									"date" => 			$path . "/reminders_registered/date.txt",
-									"sended" => 		$path . "/reminders_registered/sended.txt",
-									"to_be_sended" =>  	$path . "/reminders_registered/to_be_sended.txt"
-								), 
-				"polls"	=> array( 
-									"date" => 			$path . "/polls/date.txt",
-									"sended" => 		$path . "/polls/sended.txt",
-									"to_be_sended" =>  	$path . "/polls/to_be_sended.txt"
-								)
-				);
+function getPaths( $id ){
+	
+	global $data_path;
+	$path = $data_path . $id;
+	
+	$paths = array( 
+					"invites" => array( 
+										"date" => 			$path . "/invites/date.txt",
+										"sended" => 		$path . "/invites/sended.txt",
+										"to_be_sended" =>  	$path . "/invites/to_be_sended.txt"
+									), 
+					"register" => array( 
+										"registered" => 	$path . "/registered/registered.txt",
+									), 
+					"reminders_not_registered" => array( 
+										"date" => 			$path . "/reminders_not_registered/date.txt",
+										"sended" => 		$path . "/reminders_not_registered/sended.txt",
+										"to_be_sended" =>  	$path . "/reminders_not_registered/to_be_sended.txt"
+									), 
+					"reminders_registered" => array( 
+										"date" => 			$path . "/reminders_registered/date.txt",
+										"sended" => 		$path . "/reminders_registered/sended.txt",
+										"to_be_sended" =>  	$path . "/reminders_registered/to_be_sended.txt"
+									), 
+					"polls"	=> array( 
+										"date" => 			$path . "/polls/date.txt",
+										"sended" => 		$path . "/polls/sended.txt",
+										"to_be_sended" =>  	$path . "/polls/to_be_sended.txt"
+									)
+					);
+					
+		return $paths;
 
+}
 
 if( $q == "get_event_name" ){
 	echo ( $data_items["title"] );
@@ -182,11 +187,15 @@ if( $_GET['q'] == "list_unregistered" ){
 //--------------------------
 // Create new event files
 //---------------------------
-function add_new_event( $id, $path, $paths ){
+function add_new_event( $id ){
+	
+	global $data_path;
+	$path = $data_path.$id;
+	$paths = getPaths( $id );
 	
 	if( !empty( $id ) ){
 		
-		if( file_exists ( $path ) ){
+		if( file_exists (  $path ) ){
 			exit( "Folder allready exists!" );
 		}
 		
@@ -225,12 +234,13 @@ function add_new_event( $id, $path, $paths ){
 //---------------------------
 if( $q == "list_created_events" ){
 	
+	$events_array = getEventsFromWordpress();
 	$json = '{ "data":[';
 	
-	// Whole list could be retrieved from Wordpress
-	// but for now, to keep bindngs to wordpress 
-	// as compact as possible we only get title from wordpress
-	if ($handle = opendir( $data_path )) {
+	foreach( $events_array as $event ){
+		$json .= '{"folder_id":"' . $event->ID . '","folder_name" :"' . $event->post_title . '" },';
+	}
+	/*if ($handle = opendir( $data_path )) {
 		while(  false !== ($entry = readdir($handle))  ){
 			
 			$page = get_page( $entry );
@@ -242,7 +252,8 @@ if( $q == "list_created_events" ){
 			}
 			
     	}
-	}
+	}*/
+	
 	
 	$json = rtrim ( $json, "," );
 	$json .= "]}";
@@ -251,20 +262,21 @@ if( $q == "list_created_events" ){
 
 }
 
-function getEventsFromWordpress( $data_path ){
+function getEventsFromWordpress(){
 	
 	$event_pages_args = array( 'post_type' => 'tapahtumat', 'post_parent' => '0' );
 	$event_pages = get_posts( $event_pages_args );	
 	
+	global $data_path;
 	foreach( $event_pages as $event_page ){
 		
 		if( !file_exists( $data_path . $event_page->ID ) ){
-			createNewEvent()	
+			add_new_event(  $event_page->ID  );
 		}
 		
 	}
 	
-	print_r( $event_pages );
+	return ( $event_pages );
 	
 }
 
