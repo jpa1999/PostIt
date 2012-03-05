@@ -122,7 +122,7 @@ var MainView = function( model ){
 		$("." + target + "_to_be_sended .body_text button").on("click", function(){ parent.saveUpdatedBodyText( target, id ) 	})
 	}
 	this.sendOne = function( target, id ){
-		$.get( "../?q=send_one_" +target+ "&id=" + id,{}, function( data ){ alert( data ); window.location.reload()  })
+		$.get( "../?q=send_one_" +target+ "&posting=" +target+ "&id=" + id,{}, function( data ){ alert( data ); /*window.location.reload()*/  })
 	}
 
 	

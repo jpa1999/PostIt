@@ -20,6 +20,12 @@ require_once('../../../../wp-blog-header.php');
 header("HTTP/1.1 200 OK");
 header("Status: 200 All rosy") ;
 
+
+//---------------------------------
+// GetMailer
+//---------------------------------
+require_once('event_mailer.class.php');
+
 //---------------------------------
 // Get data from wordpress page
 //---------------------------------
@@ -120,9 +126,11 @@ if( $q == "remove_from_invite" ){
 if( $q == "send_one_invites" ){
 	
 	$date_path = $paths["invites"]['date'];
+	
 	if(  !dateNotGone($date_path) && dateActive($date_path) ) {
 		
-		$sended_mail = sendOneEmail(  $paths["invites"]['to_be_sended'], $paths["invites"]['sended']  );
+		$sended_mail = sendOneEmail(  $paths["invites"]['to_be_sended'], $paths["invites"]['sended'],  $paths, $posting,  $data_items  );
+		
 		if( !empty($sended_mail) ){
 			addLine(  $paths["reminders_not_registered"]['to_be_sended'], $sended_mail  );
 			echo "Sended one mail";
@@ -323,7 +331,9 @@ function moveEmail( $source, $target, $email ){
 }
 
 
-function sendOneEmail( $source_path, $sended_path ){
+function sendOneEmail( $source_path, $sended_path, $paths, $posting,  $data_items  ){
+	
+	print_r( $data_items );
 	
 	echo "Send one email";
 	//-------------------------
@@ -335,9 +345,29 @@ function sendOneEmail( $source_path, $sended_path ){
 	//--------------------------
 	if( validEmail($email) ){
 		echo "Popped: " . $email;
+		
+		//Send mail
+		$event_mail = new EventMailer();
+		$event_mail->sub_title =  	$posting;
+		$event_mail->event_data =   $data_items;
+		
+		if( file_exists( $paths[ $posting ]['body_text'] ) ){
+			$body_text = nl2br( file_get_contents( $paths[ $posting ]['body_text'] ) );	
+			$event_mail->body_text = $body_text;
+		}else{
+			$event_mail->body_text = "";
+		}
+		
+		
+		$event_mail->send( $email );
+		
 		// Add to sended mails
 		addLine( $sended_path, $email );
+		
+		
+		
 		return ($email);
+		
 	}else{
 		echo "NO Pop";
 		reportError("not valid email");
