@@ -57,7 +57,8 @@ function getPaths( $id ){
 					"invites" => array( 
 										"date" => 			$path . "/invites/date.txt",
 										"sended" => 		$path . "/invites/sended.txt",
-										"to_be_sended" =>  	$path . "/invites/to_be_sended.txt"
+										"to_be_sended" =>  	$path . "/invites/to_be_sended.txt",
+										"body_text" =>  	$path . "/invites/body_text.txt"
 									), 
 					"register" => array( 
 										"registered" => 	$path . "/registered/registered.txt",
@@ -65,17 +66,23 @@ function getPaths( $id ){
 					"reminders_not_registered" => array( 
 										"date" => 			$path . "/reminders_not_registered/date.txt",
 										"sended" => 		$path . "/reminders_not_registered/sended.txt",
-										"to_be_sended" =>  	$path . "/reminders_not_registered/to_be_sended.txt"
+										"to_be_sended" =>  	$path . "/reminders_not_registered/to_be_sended.txt",
+										"body_text" =>  	$path . "/reminders_not_registered/body_text.txt"
 									), 
 					"reminders_registered" => array( 
 										"date" => 			$path . "/reminders_registered/date.txt",
 										"sended" => 		$path . "/reminders_registered/sended.txt",
-										"to_be_sended" =>  	$path . "/reminders_registered/to_be_sended.txt"
+										"to_be_sended" =>  	$path . "/reminders_registered/to_be_sended.txt",
+										"body_text" =>  	$path . "/reminders_registered/body_text.txt"
 									), 
 					"polls"	=> array( 
 										"date" => 			$path . "/polls/date.txt",
 										"sended" => 		$path . "/polls/sended.txt",
-										"to_be_sended" =>  	$path . "/polls/to_be_sended.txt"
+										"to_be_sended" =>  	$path . "/polls/to_be_sended.txt",
+										"body_text" =>  	$path . "/polls/body_text.txt"
+									),
+					"on_off"	=> array( 
+										"on_off" => 		$path . "/on_off.txt"
 									)
 					);
 					
@@ -279,7 +286,28 @@ function getEventsFromWordpress(){
 	return ( $event_pages );
 	
 }
+//----------------------------
+// Posting On Off
+//----------------------------
+if( $q == "on_off" ){
+	if( $_GET['on'] == "true" ){
+		file_put_contents( $paths["on_off"]['on_off'], "1" );
+		echo "Postitus on kytketty päälle.";
+	}else{
+		if( file_exists( $paths["on_off"]['on_off'] ) ){
+			unlink( $paths["on_off"]['on_off'] );
+		}
+		echo "Postitus on kytketty pois päältä.";
+	}
+}
 
+//----------------------------
+// Update body text
+//----------------------------
+if( $q == "update_body_text" ){
+	file_put_contents( $paths[ $posting ]['body_text'], $_POST['body_text'] );
+	echo "Teksti päivitetty";
+}
 //--------------------------
 // Paths
 //---------------------------

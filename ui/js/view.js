@@ -13,10 +13,49 @@ var MainView = function( model ){
 
 	this.update = function(){
 		
+		this.basepath = "../../data/" + this.model.id
+		
 		this.updateTitle()
 		this.changePage()
 		this.initNavButtons()
+		
+		this.updateOnOff()
 	}
+	
+	
+	//----------------------
+	// ON OFF
+	//----------------------
+	this.updateOnOff = function(){
+		main_view = this
+		
+		$(".switch").off("click")
+		$(".switch").on("click", function(){   main_view.onClickOnOff()   } )
+		
+		$.ajax({
+			url: this.basepath + "/on_off.txt", 
+			data: {},
+			type: 'get',
+			error: function(XMLHttpRequest, textStatus, errorThrown){
+				main_view.onOnOffDataLoaded( textStatus )
+			},
+			success: this.onOnOffDataLoaded
+		});
+	}
+	this.onOnOffDataLoaded = function( data){
+		if( data == 1 ){ 
+			$(".switch").addClass("switch_on")
+		}else{ 
+			$(".switch").removeClass("switch_on")
+		}
+	}
+	
+	this.onClickOnOff = function(){
+		$(".switch").toggleClass("switch_on")
+		$.get( "../?q=on_off&on=" + $(".switch").hasClass("switch_on") + "&id=" + this.model.id , function( data ){ alert( data ); window.location.reload()  } )
+	}
+	
+	//--------------------------
 	
 	this.updateTitle = function(){
 		$(".event_title").load( "../?q=get_event_name&id=" + this.model.id )	
@@ -78,6 +117,9 @@ var MainView = function( model ){
 		
 		$("." + target + "_to_be_sended .full_list button").off("click")
 		$("." + target + "_to_be_sended .full_list button").on("click", function(){ parent.saveUpdatedList( target, id ) 	})
+		
+		$("." + target + "_to_be_sended .body_text button").off("click")
+		$("." + target + "_to_be_sended .body_text button").on("click", function(){ parent.saveUpdatedBodyText( target, id ) 	})
 	}
 	this.sendOne = function( target, id ){
 		$.get( "../?q=send_one_" +target+ "&id=" + id,{}, function( data ){ alert( data ); window.location.reload()  })
@@ -94,17 +136,11 @@ var MainView = function( model ){
 	//------------------------------------
 	// GET LISTS
 	//------------------------------------
-	this.saveUpdatedList = function( target, id ){
-		$.post( 
-				"../",
-				{ 'q':'update_list', 'posting': target, 'id': id, 'list': $("." + target + "_to_be_sended textarea").val() },
-				function(data){ alert( data ); }
-				)
-	}
 	this.getLists = function( hash_target, id ){
 		
 		if( hash_target != "errors"){
 			this.loadSendLists( hash_target )
+			this.loadBodyText( hash_target )
 			//this.loadDate( hash_target, id )
 		}else{
 			$("#errors pre").load( "../../data/errors/errors.txt" );
@@ -118,7 +154,7 @@ var MainView = function( model ){
 	}
 	
 	this.loadSendLists = function( target ){
-		to_be_sended_container = "#" + target + "_tabs ." + target + "_to_be_sended textarea"
+		to_be_sended_container = "#" + target + "_tabs ." + target + "_to_be_sended textarea.email_list"
 		sended_container = "#" + target + "_tabs ." + target + "_sended pre"
 		
 		var main_view = this
@@ -126,7 +162,36 @@ var MainView = function( model ){
 		$( sended_container ).load( 		"../" + this.model.paths[target].sended 		+ this.random_string )
 	
 	}
+	this.saveUpdatedList = function( target, id ){
+		$.post( 
+				"../",
+				{ 'q':'update_list', 'posting': target, 'id': id, 'list': $("." + target + "_to_be_sended textarea.email_list").val() },
+				function(data){ 
+						alert( data );
+						window.location.reload() 
+					}
+				)
+	}
+	//------------------
+	// Body text
+	//------------------
+	this.loadBodyText = function( target ){
+		body_text_container =  "#" + target + "_tabs ." + target + "_to_be_sended textarea.body_text"
+		var main_view = this
+		$( body_text_container ).load( 	"../" + this.model.paths[target].body_text 	+ this.random_string,  function(){   main_view.resizeTextArea( body_text_container  )   } )
+	}
 	
+	this.saveUpdatedBodyText = function( target, id ){
+		$.post( 
+				"../",
+				{ 'q':'update_body_text', 'posting': target, 'id': id, 'body_text': $("." + target + "_to_be_sended textarea.body_text").val() },
+					function(data){ 
+						alert( data); 
+						window.location.reload()
+					}
+				)
+	}
+	//------------------
 	this.resizeTextArea = function( target ){
 		$(".hidden_temp_for_email_lists pre").html(  $(target).html()  )
 		 $(target).height( $(".hidden_temp_for_email_lists").height()+20 )
