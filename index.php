@@ -33,7 +33,6 @@ if( !empty( $id )){
 	// Get mecessary properties from post to single array
 	// So you do not have to remember if they come from page or meta 
 	$page = get_page( $id );
-	
 	$data_items = array( 
 						"type"					=> 	$page->post_type,
 						"parent"				=> 	$page->post_parent,
@@ -46,7 +45,9 @@ if( !empty( $id )){
 						"gallup_url"			=>	get_post_meta( $id, "event_gallup_url", true ),
 						"list_events_boolean"	=>	get_post_meta( $id, "listaa_tapahtumat", true),
 						"datetime"				=>	get_post_meta( $id, "event_datetime", true ),
-						"registration_end_date"	=>	get_post_meta( $id, "event_registration_end_date", true )
+						"registration_end_date"	=>	get_post_meta( $id, "event_registration_end_date", true ),
+						"page_url"				=>  get_permalink( $id )
+						
 						 );
 }
 //--------------------------

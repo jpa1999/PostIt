@@ -39,12 +39,19 @@ var Application = function( parent ){
 	this.loadPathsAndFolders = function(){
 		var application = this
 		$.getJSON('../?q=get_paths&id=' + this.id, function( data ){ application.pathsLoaded( data ) })
-		$.getJSON( "../?q=list_created_events",   function( data ){  application.view.populateEventDropDown( data.data )  })
+		$.getJSON( "../?q=list_created_events",   function( data ){  application.eventsLoaded( data )  })
 	}
 	
-	this.pathsLoaded = function( data ){
-		this.paths = data
-		this.view.update()
+	this.eventsLoaded = function( data ){
+		( data )? this.view.populateEventDropDown( data.data )	: alert("Virhe tapahtumien listauksessa! Ota yhteyttä ylläpitoon.");
+	}
+	this.pathsLoaded = function( paths_data ){
+		if( paths_data ){ 
+			this.paths = paths_data
+			this.view.update()
+		}else{
+			alert("Virhe polkujen listauksessa! Ota yhteyttä ylläpitoon.");
+		}
 	}
 	
 	this.setHashParameters = function(){
