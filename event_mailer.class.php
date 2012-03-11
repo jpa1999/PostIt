@@ -36,19 +36,24 @@ class EventMailer{
 	function setVariableData(){
 		
 		switch( $this->posting_type ){
+			case "register" : 
+				$this->subject = "Kiitos rekisteröitymisestä";
+				$this->sub_title = "Kiitos rekisteröitymisestä";
+				$this->link_image_filename = "lisatietoja_nappi.jpg";
+			break;
 			case "invites" : 
 				$this->subject = "Henkilökohtainen kutsu tilaisuuteen";
 				$this->sub_title = "Henkilökohtainen kutsu tilaisuuteen";
 				$this->link_image_filename = "ilmoittaudu_nappi.jpg";
 			break;
-			case "reminder_not_registered" : 
+			case "reminders_not_registered" : 
 				$this->subject = "Henkilökohtainen kutsu tilaisuuteen";
 				$this->sub_title = "Henkilökohtainen kutsu tilaisuuteen";
 				$this->link_image_filename = "ilmoittaudu_nappi.jpg";
 			break;
-			case "reminder_registered" : 
-				$this->subject = "Teoston tilaisuus lähestyy";
-				$this->sub_title = "Teoston tilaisuus lähestyy";
+			case "reminders_registered" : 
+				$this->subject = "Muistutus: Teoston tilaisuus lähestyy";
+				$this->sub_title = "Muistutus: Teoston tilaisuus lähestyy";
 				$this->link_image_filename = "lisatietoja_nappi.jpg";
 			break;
 			case "polls" : 
@@ -71,7 +76,7 @@ class EventMailer{
 		$this->template = str_replace("<!-- time -->", 		$this->event_data['datetime'], 	$this->template );
 		$this->template = str_replace("<!-- body_text -->", $this->body_text, 				$this->template );
 	
-		$right_column_string = "<a href='" . $this->event_data['permalink'] . "' ><img src='cid:linkimagejpg' /></a>";
+		$right_column_string = "<a href='" . $this->event_data['page_url'] . "' ><img src='cid:linkimagejpg' /></a>";
 		$this->template = str_replace("<!-- right column -->", $right_column_string, $this->template );
 	}
 	

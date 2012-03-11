@@ -131,7 +131,7 @@ var MainView = function( model ){
 		$("." + target + "_to_be_sended .body_text button").on("click", function(){ parent.saveUpdatedBodyText( target, id ) 	})
 	}
 	this.sendOne = function( target, id ){
-		$.get( "../?q=send_one_" +target+ "&posting=" +target+ "&id=" + id,{}, function( data ){ alert( data ); /*window.location.reload()*/  })
+		$.get( "../?q=send_one_" +target+ "&posting=" +target+ "&id=" + id,{}, function( data ){ alert( data ); window.location.reload()  })
 	}
 
 	
@@ -139,7 +139,7 @@ var MainView = function( model ){
 		$.get( "../?q=add_to_invite&id=" +id+ "&email=" + $(".invite_add_email .email").val(),{}, function(){ window.location.reload() })
 	}
 	this.sendRegister = function ( hash_target, id){
-		$.get( "../?q=register&id=" +id+ "&email=" + $(".register .register_email").val(),{}, function(){ window.location.reload()  })
+		$.get( "../?q=register&id=" +id+ "&email=" + $(".register .register_email").val(),{}, function(){ /*window.location.reload()*/  })
 	}
 
 	//------------------------------------

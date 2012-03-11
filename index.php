@@ -126,42 +126,50 @@ if( $q == "remove_from_invite" ){
 //-----------------------------
 if( $q == "send_one_invites" ){
 	
-	$date_path = $paths["invites"]['date'];
+	$sended_mail = trySendOneMail( $paths["invites"]['date'], $paths["invites"]['to_be_sended'], $paths["invites"]['sended'] );
 	
-	if(  !dateNotGone($date_path) && dateActive($date_path) ) {
-		
-		$sended_mail = sendOneEmail(  $paths["invites"]['to_be_sended'], $paths["invites"]['sended'],  $paths, $posting,  $data_items  );
-		
-		if( !empty($sended_mail) ){
-			addLine(  $paths["reminders_not_registered"]['to_be_sended'], $sended_mail  );
-			echo "Sended one mail";
-		}
+	if( !empty($sended_mail) ){
+		addLine(  $paths["reminders_not_registered"]['to_be_sended'], $sended_mail  );
+		echo "Sended one mail";
+	}
+	
+}
+//--------------------------
+// Send reminders and poll
+//---------------------------
+if( $_GET['q'] == "send_one_register" ){
+	$sended_mail = sendOneEmail( $to_be_sended_path, $sended_path,  $paths, $posting,  $data_items   );
+}
+if( $_GET['q'] == "send_one_reminders_registered" ){
+	$sended_mail = trySendOneMail( $paths["reminders_registered"]['date'], $paths["reminders_registered"]['to_be_sended'], $paths["reminders_registered"]['sended'] );
+	reportEmail( $sended_mail );
+}
+if( $_GET['q'] == "send_one_reminders_not_registered" ){
+	$sended_mail = trySendOneMail( $paths["reminders_not_registered"]['date'], $paths["reminders_not_registered"]['to_be_sended'], $paths["reminders_not_registered"]['sended'] );
+	reportEmail( $sended_mail );
+}
+if( $_GET['q'] == "send_one_polls" ){
+	$sended_mail = trySendOneMail( $paths["polls"]['date'], $paths["polls"]['to_be_sended'], $paths["polls"]['sended'] );
+	reportEmail( $sended_mail );
+}
+function reportEmail( $sended_mail ){
+	if( !empty($sended_mail) ){ echo "Sended one mail"; }else{ echo "Didn't send mail"; }
+}
+function trySendOneMail( $date_path, $to_be_sended_path, $sended_path ){
+	
+	global $paths;
+	global $posting;
+	global $data_items;
+	
+	if( !dateNotGone($date_path) && dateActive($date_path)  ) {
+		$sended_mail = sendOneEmail( $to_be_sended_path, $sended_path,  $paths, $posting,  $data_items   );
+		return $sended_mail;
 	}else{
+		return null;
 		echo "Send date in future or Date not active - no mail send";	
 	}
 }
-//--------------------------
-// Send reminder
-//---------------------------
-if( $_GET['q'] == "send_one_reminders_registered" ){
-	if(  !dateNotGone( $paths["reminders_registered"]['date'] ) ) {
-		sendOneEmail( $paths["reminders_registered"]['to_be_sended'], 		$paths["reminders_registered"]['sended'] );
-	}
-}
-if( $_GET['q'] == "send_one_reminders_not_registered" ){
-	if(  !dateNotGone( $paths["reminders_not_registered"]['date'] ) ) {
-		sendOneEmail( $paths["reminders_not_registered"]['to_be_sended'], 	$paths["reminders_not_registered"]['sended'] );
-	}
-}
 
-//--------------------------
-// Send Poll
-//---------------------------
-if( $_GET['q'] == "send_one_polls" ){
-	if(  !dateNotGone( $paths["polls"]['date'] ) ) {
-		sendOneEmail( $paths["polls"]['to_be_sended'], $paths["polls"]['sended'] );
-	}
-}
 //--------------------------
 // List update
 //--------------------------
@@ -178,11 +186,11 @@ if( $_GET['q'] == "register" ){
 	checkEmail( $email );
 	addLine(  $paths["register"]['registered'], $email  );
 	
-	if(  dateNotGone( $paths["polls"]['date'] )  					) addLine(  $paths["polls"]['to_be_sended'], $email  );
-	if(  dateNotGone( $paths["reminders_registered"]['date'] )  	) addLine(  $paths["reminders_registered"]['to_be_sended'], $email  );
+	if(  file_exists( $paths["polls"]['date'] ) 				)addLine( $paths["polls"]['to_be_sended'], $email );
+	if(  file_exists( $paths["reminders_registered"]['date'] ) 	)addLine( $paths["reminders_registered"]['to_be_sended'], $email );
 	
 	removeLine( $paths["reminders_not_registered"]['to_be_sended'], $email );
-
+	
 }
 //--------------------------
 // Get unregistered lis
@@ -394,9 +402,16 @@ function dateActive( $date_file ){
 	}
 }
 function dateNotGone( $date_file ){
-	$date_string = file_get_contents( $date_file );
-	$timestamp = changeDatetimeToTime( $date_string );
-	return ( $timestamp > time() )? true : false;
+	
+	if( file_exists( $date_file )  ){
+		$date_string = file_get_contents( $date_file );
+		$timestamp = changeDatetimeToTime( $date_string );
+		return ( $timestamp > time() )? true : false;
+	}else{
+		//This is a bit cofusing date is gone if there is no file
+		// Date not gone is usually combined with dateActive so no harm done
+		return false;
+	}
 	//echo $date_string . " | Date bigger than now: " . ($timestamp > time()) ."<br>";	
 }
 
