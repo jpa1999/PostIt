@@ -1,9 +1,13 @@
 <?PHP
+require_once "phpmailer/class.phpmailer.php";
+require_once "phpmailer/class.smtp.php";
 
 class EventMailer{
 	
-	var $sub_title;
+	var $posting_type;
 	var $event_data;
+	
+	var $sub_title;
 	var $body_text;
 	var $email;
 	
@@ -16,55 +20,105 @@ class EventMailer{
 	
 	public function send( $email ){
 		
-		$this->email = $email;
-		$this->getTemplate();
-		$this->placeData();
 		
-		print_r( $this->template );
+		$this->email = $email;
+		$this->setVariableData();
+		$this->getTemplate();
+		$this->prepareTemplate();
+		$this->setTextOnlyBody();
+		
+		$this->smtpmailer();
+		
+		//print_r( $this->template );
 		
 	}
 	
-	function placeData(){
+	function setVariableData(){
 		
-		switch( $this->sub_title ){
+		switch( $this->posting_type ){
 			case "invites" : 
-				$sub_title = "Kutsu:";
-				$link_image = "ilmoittaudu_nappi.jpg";
+				$this->subject = "Henkilökohtainen kutsu tilaisuuteen";
+				$this->sub_title = "Henkilökohtainen kutsu tilaisuuteen";
+				$this->link_image_filename = "ilmoittaudu_nappi.jpg";
 			break;
 			case "reminder_not_registered" : 
-				$sub_title = "Kutsu:";
-				$link_image = "ilmoittaudu_nappi.jpg";
+				$this->subject = "Henkilökohtainen kutsu tilaisuuteen";
+				$this->sub_title = "Henkilökohtainen kutsu tilaisuuteen";
+				$this->link_image_filename = "ilmoittaudu_nappi.jpg";
 			break;
-			case "reminder_not_registered" : 
-				$sub_title = "Muistutus:";
-				$link_image = "lisatietoja_nappi.jpg";
+			case "reminder_registered" : 
+				$this->subject = "Teoston tilaisuus lähestyy";
+				$this->sub_title = "Teoston tilaisuus lähestyy";
+				$this->link_image_filename = "lisatietoja_nappi.jpg";
 			break;
 			case "polls" : 
-				$sub_title = "Vastaa mielipidekyselyyn:";
-				$link_image = "mielipide_nappi.jpg";
+				$this->subject = "Henkilökohtainen kutsu mielipidekyselyyn";
+				$this->sub_title = "Henkilökohtainen kutsu mielipidekyselyyn";
+				$this->link_image_filename = "mielipide_nappi.jpg";
 			break;
 		}
+	}
+	
+	function getTemplate(){
+		if( file_exists( $this->template_file )  ){  $this->template = file_get_contents(  $this->template_file );  }else{  echo "No template file for mailing!";	}
+	}
+	
+	function prepareTemplate(){
 		
-		$this->template = str_replace("<!-- sub_title -->", sub_title, 						$this->template );
+		$this->template = str_replace("<!-- sub_title -->", $this->sub_title, 				$this->template );
 		$this->template = str_replace("<!-- title -->", 	$this->event_data['title'], 	$this->template );
 		$this->template = str_replace("<!-- location -->", 	$this->event_data['location'], 	$this->template );
 		$this->template = str_replace("<!-- time -->", 		$this->event_data['datetime'], 	$this->template );
 		$this->template = str_replace("<!-- body_text -->", $this->body_text, 				$this->template );
 	
-		$right_column_string = "<a href='" . $this->event_data['permalink'] . "' ><img src='" . $link_image . "' /></a>";
-		
-		$this->template = str_replace("<!-- right column -->", $right_column_string, 		$this->template );
-	
-		
+		$right_column_string = "<a href='" . $this->event_data['permalink'] . "' ><img src='cid:linkimagejpg' /></a>";
+		$this->template = str_replace("<!-- right column -->", $right_column_string, $this->template );
 	}
 	
-	function getTemplate(){
+	function setTextOnlyBody(){
+		$this->text_only_body = $this->event_data['title'] . "\n\n" . 	$this->event_data['location'] . "\n" . $this->event_data['datetime'] . "\n\n" . $this->body_text;
+	}
+	
+	function smtpmailer(){ 
 		
-		if( file_exists( $this->template_file )  ){
-			$this->template = file_get_contents(  $this->template_file );
-		}else{
-			echo "No template file for mailing!";	
+		global $error;
+		$mail = new PHPMailer();  // create a new object
+		$mail->IsSMTP(); // enable SMTP
+		$mail->SMTPDebug = 1;  // debugging: 1 = errors and messages, 2 = messages only
+		$mail->SMTPAuth = true;  // authentication enabled
+		$mail->SMTPSecure = 'ssl'; // secure transfer enabled REQUIRED for GMail
+		$mail->Host = 'smtp.gmail.com';
+		$mail->Port = 465; 
+		require_once "mail_credentials.php";
+		$mail->CharSet="UTF-8";
+		$mail->IsHTML( true );
+		
+		$mail->AddAddress( $this->email );
+		//---------------------------
+		// Add images to mail
+		//---------------------------
+		$mail->AddEmbeddedImage( '../templates/email_template_1/header.gif', 'headergif', 'header.gif'); 
+		$mail->AddEmbeddedImage( '../templates/email_template_1/footer_lines.gif', 'footerlinesgif', 'footer_lines.gif'); 
+		//$mail->AddEmbeddedImage( '../templates/email_template_1/main_image.jpg', 'mainimagejpg', 'main_image.jpg'); 
+		$mail->AddEmbeddedImage( '../templates/email_template_1/' . $this->link_image_filename, 'linkimagejpg', $this->link_image_filename); 
+		$mail->AddEmbeddedImage( '../templates/email_template_1/title_background.jpg', 'titlebackgroundjpg', 'title_background.jpg'); 
+		
+		//---------------------------
+		// Subject and content
+		//---------------------------
+		$mail->Subject = $this->subject;
+		$mail->Body = $this->template;
+		$mail->AltBody = $this->text_only_body;
+		
+		if(!$mail->Send()) {
+			$error = 'Mail error: '.$mail->ErrorInfo; 
+			return false;
+		} else {
+			$error = 'Message sent!';
+			return true;
 		}
+		
+		echo $error;
 	}
 	
 	

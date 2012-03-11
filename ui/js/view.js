@@ -15,11 +15,14 @@ var MainView = function( model ){
 		
 		this.basepath = "../../data/" + this.model.id
 		
-		this.updateTitle()
 		this.changePage()
 		this.initNavButtons()
 		
-		this.updateOnOff()
+		if( this.model.id ){
+			this.updateTitle()
+			
+			this.updateOnOff()
+		}
 	}
 	
 	
@@ -28,6 +31,8 @@ var MainView = function( model ){
 	//----------------------
 	this.updateOnOff = function(){
 		main_view = this
+		
+		$(".switch").show()
 		
 		$(".switch").off("click")
 		$(".switch").on("click", function(){   main_view.onClickOnOff()   } )
@@ -39,10 +44,13 @@ var MainView = function( model ){
 			error: function(XMLHttpRequest, textStatus, errorThrown){
 				main_view.onOnOffDataLoaded( textStatus )
 			},
-			success: this.onOnOffDataLoaded
+			success: main_view.onOnOffDataLoaded
 		});
 	}
-	this.onOnOffDataLoaded = function( data){
+	this.onOnOffDataLoaded = function( data ){
+		
+		//alert( "OnOffdata: " + data )
+		
 		if( data == 1 ){ 
 			$(".switch").addClass("switch_on")
 		}else{ 
@@ -87,6 +95,7 @@ var MainView = function( model ){
 		}else{
 			$(".navigation ul").hide()
 			$(".event_title").hide()
+			$(".switch").hide()
 		}
 		this.checkForErrors( hash.status,hash.parameter )
 		this.highlightNavi( hash.target )

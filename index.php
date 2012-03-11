@@ -336,20 +336,22 @@ function sendOneEmail( $source_path, $sended_path, $paths, $posting,  $data_item
 	
 	print_r( $data_items );
 	
-	echo "Send one email";
 	//-------------------------
 	// Get next line
 	//-------------------------
 	$email = popLine ( $source_path );
+	
+	echo "Send one email from " . $source_path . " -> " . $email ;
+	
 	//--------------------------
 	// Do sending here
 	//--------------------------
-	if( validEmail($email) ){
+	if( validEmail( $email ) ){
 		echo "Popped: " . $email;
 		
 		//Send mail
 		$event_mail = new EventMailer();
-		$event_mail->sub_title =  	$posting;
+		$event_mail->posting_type =  	$posting;
 		$event_mail->event_data =   $data_items;
 		
 		if( file_exists( $paths[ $posting ]['body_text'] ) ){
@@ -449,6 +451,11 @@ function saveArrayToFile( $path, $array ){
 	$array_string = implode( "\n",$array ); 
 	file_put_contents( $path, $array_string );
 }
+
+
+
+
+
 //-------------------------
 // Errors
 //-------------------------
