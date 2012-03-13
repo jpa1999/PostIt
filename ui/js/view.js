@@ -38,7 +38,7 @@ var MainView = function( model ){
 		$(".switch").on("click", function(){   main_view.onClickOnOff()   } )
 		
 		$.ajax({
-			url: this.basepath + "/on_off.txt", 
+			url: this.basepath + "/on_off.txt?rand=" + Math.random(), 
 			data: {},
 			type: 'get',
 			error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -47,20 +47,14 @@ var MainView = function( model ){
 			success: main_view.onOnOffDataLoaded
 		});
 	}
+	
 	this.onOnOffDataLoaded = function( data ){
-		
-		//alert( "OnOffdata: " + data )
-		
-		if( data == 1 ){ 
-			$(".switch").addClass("switch_on")
-		}else{ 
-			$(".switch").removeClass("switch_on")
-		}
+		( data == 1 )? $(".switch").addClass("switch_on") : $(".switch").removeClass("switch_on");
 	}
 	
 	this.onClickOnOff = function(){
 		$(".switch").toggleClass("switch_on")
-		$.get( "../?q=on_off&on=" + $(".switch").hasClass("switch_on") + "&id=" + this.model.id , function( data ){ alert( data ); window.location.reload()  } )
+		$.get( "../?q=on_off&on=" + $(".switch").hasClass("switch_on") + "&id=" + this.model.id + "&random=" +  Math.random() , function( data ){ alert( data ); window.location.reload()  } )
 	}
 	
 	//--------------------------
@@ -107,28 +101,38 @@ var MainView = function( model ){
 	this.initButtons = function( hash_target, id ){
 		parent = this
 		if( hash_target =="invites" ){
+			
 			$(".register button").off( "click" )
 			$(".register button").on( "click", function(){ parent.sendRegister( hash_target, id ) } )
+			
 			$(".invite_add_email button").off( "click" )
 			$(".invite_add_email button").on( "click", function(){ parent.addEmail( hash_target, id ) } )	
 		}
 		
-		var targets = [ "invites","polls", "reminders_registered", "reminders_not_registered" ]
+		var targets = [ "invites","polls", "reminders_registered", "reminders_not_registered", "register" ]
 		while( targets.length > 0 ){  
 			target = targets.pop()
-			this.loadDate( target, id )
+			if( target != "registered" ) this.loadDate( target, id )
 			this.setButton( target, id, parent )  
 		}
 	}
 	this.setButton = function( target, id, parent ){
-		$("." + target + " .send_one button").off( "click" )
-		$("." + target + " .send_one button").on( "click", function(){ parent.sendOne( target, id ) 	})
 		
+		try{
+			$("." + target + " .send_one button").off( "click" )
+			$("." + target + " .send_one button").on( "click", function(){ parent.sendOne( target, id ) 	})
+		}catch( error ){}
+		
+		try{
 		$("." + target + "_to_be_sended .full_list button").off("click")
 		$("." + target + "_to_be_sended .full_list button").on("click", function(){ parent.saveUpdatedList( target, id ) 	})
+		}catch( error ){}
 		
+		try{
 		$("." + target + "_to_be_sended .body_text button").off("click")
 		$("." + target + "_to_be_sended .body_text button").on("click", function(){ parent.saveUpdatedBodyText( target, id ) 	})
+		}catch( error ){}
+		
 	}
 	this.sendOne = function( target, id ){
 		$.get( "../?q=send_one_" +target+ "&posting=" +target+ "&id=" + id,{}, function( data ){ alert( data ); window.location.reload()  })
@@ -158,6 +162,8 @@ var MainView = function( model ){
 		if( hash_target =="invites" ){
 			$("#invites_tabs .registered pre").load( 	"../" + this.model.paths['register'].registered + this.random_string )
 			$("#invites_tabs .unregistered pre").load(  "../?q=list_unregistered&id=" + id );
+			
+			$( "#registered .body_text textarea" ).load( 	"../" + this.model.paths["register"].body_text 	+ this.random_string,  function(){   main_view.resizeTextArea( "#registered .body_text textarea"  )   } )
 		}
 		
 	}
@@ -203,7 +209,7 @@ var MainView = function( model ){
 	//------------------
 	this.resizeTextArea = function( target ){
 		$(".hidden_temp_for_email_lists pre").html(  $(target).html()  )
-		 $(target).height( $(".hidden_temp_for_email_lists").height()+20 )
+		 $(target).height( $(".hidden_temp_for_email_lists").height()+10 )
 	}
 	//-----------------------------
 	// Dates

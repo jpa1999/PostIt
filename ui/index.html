@@ -80,6 +80,7 @@
             <!------------------------------------------------->
             <div id="invites" class="view invites">
                 <div id="invites_tabs">
+                		<!-- SUBNAV -->
                         <ul>
                             <li><a href="#invites_to_be_sended">Lähtevät</a></li>
                             <li><a href="#invites_sended">Lähetetyt</a></li>
@@ -88,7 +89,12 @@
                         </ul>
                         
                         <div id="invites_to_be_sended" class="invites_to_be_sended">
-                        
+                        	<!-- Send one email-->
+                            <div class="send_one box">
+                            	<button class="right">Lähetä yksi email</button>
+                                <div class="clear"></div>
+                            </div>
+                            
                         	<!-- SEND DATE -->
                             <div class="box">
                         		Kutsujen lähetysaika: 
@@ -109,25 +115,44 @@
                             	Rekisteröi sähköpostiosoite: <input type="text" name="email" id="register_email"  class="register_email"/> <button>Lähetä</button>
                             </div> -->
                             
-                            <!-- Send one email-->
-                            <div class="send_one box">
-                            	<button>Lähetä yksi email</button>
-                            </div>
+                            
                             
                             <!-- Body text -->
                             <div class="body_text box">
+                            	Kutsu sähköpostin teksti:<br>
                             	<button><img src="img/save.png">Talleta muutokset tekstiin</button>
                                 <textarea  class="body_text"></textarea>
                             </div>
                             
                             <div class="full_list box">
+                            	Kutsuttavien sähköpostiosoitteet ( kukin omalle rivilleen ):<br>
                             	<button><img src="img/save.png"> Talleta muutokset listaan</button>
                         		<textarea class="email_list" ></textarea>
                             </div>
                         </div>
                         <div id="invites_sended" class="invites_sended"><pre></pre></div>
-                        <div id="registered" class="registered"><pre></pre></div>
-                        <div id="unregistered" class="unregistered"><pre></pre></div>
+                        
+                        <!-- Registered -->
+                        <div id="registered" class="registered register_to_be_sended">
+                        	<table width="100%"><tr>
+                                	<td width="420" valign="top"><br>Rekisteröityneet:<br><pre></pre></td>
+                                	<td width="420" align="right">
+                                        <!-- Body text -->
+                                        <div class="body_text">
+                                        	<br>
+                                           	<div class="left" style="margin-bottom:10px;">Rekisteröitymisen yhteydessä lähtevän sähköpostin teksti:</div>
+                                            <textarea  class="body_text"></textarea>
+                                            <br><br>
+                                            <button><img src="img/save.png">Talleta muutokset tekstiin</button>
+                                        </div>
+                                     </td>
+                        	</tr></table>
+                         </div>
+                        
+                        <div id="unregistered" class="unregistered">
+                        	<pre></pre>
+                        </div>
+                        
                  </div>
             </div>
             
@@ -143,24 +168,29 @@
                         </ul>
                         
                         <div id="reminders_not_registered_to_be_sended" class="reminders_not_registered_to_be_sended">
-                        	<!-- SEND DATE -->
+                        	 <!-- Send one email-->
+                            <div class="send_one box">
+                            	<button class="right">Lähetä yksi muistutus listalta  ( testausta varten )</button>
+                                <div class="clear"></div>
+                            </div>
+                            
+                            <!-- SEND DATE -->
                        		<div class="box">
-                            	Muistutuksen lähetysaika rekisteröitymättömille: 
+                            	Lähetys alkaa: 
                                 <input type="text" name="invites_date" id="reminders_not_registered_date"  class="date"/>
                                 <button class="date_reset"><img src="img/clear.png"><div>Poista aika ( älä lähetä )</div></button>
                             </div>
-                            <!-- Send one email-->
-                            <div class="send_one box">
-                            	<button>Lähetä muistutus</button>
-                            </div>
+                           
                            <!-- Body text -->
                             <div class="body_text box">
+                            	Muistutus teksti rekisteröitymättömille:<br>
                             	<button><img src="img/save.png">Talleta muutokset tekstiin</button>
                                 <textarea  class="body_text"></textarea>
                             </div>
                             
                             <!-- List-->
                             <div class="full_list box">
+                            	Muistutettavien sähköpostiosoitteet ( kukin omalle rivilleen ):<br>
                             	<button><img src="img/save.png">  Talleta muutokset listaan</button>
                             	<textarea class="email_list" ></textarea>
                             </div>
@@ -181,23 +211,27 @@
                         </ul>
                         
                         <div id="reminders_registered_to_be_sended" class="reminders_registered_to_be_sended">
-                         	<!-- SEND DATE -->
+                         	<!-- Send one email-->
+                            <div class="send_one box">
+                            	<button class="right">Lähetä yksi muistutus listalta  ( testausta varten )</button>
+                                <div class="clear"></div>
+                            </div>
+                            <!-- SEND DATE -->
                        		<div class="box">
-                        		Muistutuksen lähetysaika rekisteröityneille:
+                        		Lähetys alkaa:
                                 <input type="text" name="invites_date" id="reminders_registered_date" class="date"/>
                                 <button class="date_reset"><img src="img/clear.png"><div>Poista aika ( älä lähetä )</div></button>
                             </div>
-                            <!-- Send one email-->
-                            <div class="send_one box">
-                            	<button>Lähetä muistutus</button>
-                            </div>
+                            
                             <!-- Body text -->
                             <div class="body_text box">
+                            	Muistutus teksti rekisteröityneille:<br>
                             	<button><img src="img/save.png">Talleta muutokset tekstiin</button>
                                 <textarea  class="body_text"></textarea>
                             </div>
                             <!-- List-->
                             <div class="full_list box">
+                            	Muistutettavien sähköpostiosoitteet ( kukin omalle rivilleen ):<br>
                             	<button> <img src="img/save.png"> Talleta muutokset listaan</button>
                         		<textarea class="email_list" ></textarea>
                             </div>
@@ -220,23 +254,26 @@
                             <li><a href="#polls_sended">Lähetetyt</a></li>
                         </ul>
                         <div id="polls_to_be_sended" class="polls_to_be_sended">
-                        	 <!-- SEND DATE -->
+                        	  <!-- Send one email-->
+                            <div class="send_one box">
+                            	<button clasS="right">Lähetä yksi kutsu listalta ( testausta varten )</button>
+                                <div class="clear"></div>
+                            </div>
+                             <!-- SEND DATE -->
                             <div class="box">
-                                Gallup kutusujen lähetysaika:
+                                Kutsujen lähetysaika alkaa:
                                 <input type="text" name="polls_date" id="polls_date"  class="date"/>
                                 <button class="date_reset"><img src="img/clear.png"><div>Poista aika ( älä lähetä )</div></button>
                             </div>
-                             <!-- Send one email-->
-                            <div class="send_one box">
-                            	<button>Lähetä kyselykutsu</button>
-                            </div>
                             <!-- Body text -->
                             <div class="body_text box">
+                            	Mielipidekysely kutsun teksti:<br>
                             	<button><img src="img/save.png">Talleta muutokset tekstiin</button>
                                 <textarea  class="body_text"></textarea>
                             </div>
                             <!-- List-->
                             <div class="full_list box">
+                            	Mielipidekyselyn saavien sähköpostiosoitteet ( kukin omalle rivilleen ):<br>
                             	<button><img src="img/save.png"> Talleta muutokset listaan</button>
                         		<textarea class="email_list" ></textarea>
                             </div>
@@ -267,6 +304,7 @@
             </script>
         </div>
 	
+    	<br><br>
     </div>
 	</div>
     

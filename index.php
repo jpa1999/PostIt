@@ -22,6 +22,14 @@ header("Status: 200 All rosy") ;
 
 
 //---------------------------------
+// CHECK FOR ADMIN
+//---------------------------------
+
+if ( !current_user_can('manage_options') ) {
+	die( "Please login" );	
+}
+
+//---------------------------------
 // GetMailer
 //---------------------------------
 require_once('event_mailer.class.php');
@@ -69,6 +77,7 @@ function getPaths( $id ){
 									), 
 					"register" => array( 
 										"registered" => 	$path . "/registered/registered.txt",
+										"body_text" => 		$path . "/registered/body_text.txt"
 									), 
 					"reminders_not_registered" => array( 
 										"date" => 			$path . "/reminders_not_registered/date.txt",
@@ -137,50 +146,31 @@ if( $q == "send_one_invites" ){
 //--------------------------
 // Send reminders and poll
 //---------------------------
-if( $_GET['q'] == "send_one_register" ){
-	$sended_mail = sendOneEmail( $to_be_sended_path, $sended_path,  $paths, $posting,  $data_items   );
-}
-if( $_GET['q'] == "send_one_reminders_registered" ){
+if( $q == "send_one_reminders_registered" ){
 	$sended_mail = trySendOneMail( $paths["reminders_registered"]['date'], $paths["reminders_registered"]['to_be_sended'], $paths["reminders_registered"]['sended'] );
 	reportEmail( $sended_mail );
 }
-if( $_GET['q'] == "send_one_reminders_not_registered" ){
+if( $q == "send_one_reminders_not_registered" ){
 	$sended_mail = trySendOneMail( $paths["reminders_not_registered"]['date'], $paths["reminders_not_registered"]['to_be_sended'], $paths["reminders_not_registered"]['sended'] );
 	reportEmail( $sended_mail );
 }
-if( $_GET['q'] == "send_one_polls" ){
+if( $q == "send_one_polls" ){
 	$sended_mail = trySendOneMail( $paths["polls"]['date'], $paths["polls"]['to_be_sended'], $paths["polls"]['sended'] );
 	reportEmail( $sended_mail );
 }
-function reportEmail( $sended_mail ){
-	if( !empty($sended_mail) ){ echo "Sended one mail"; }else{ echo "Didn't send mail"; }
-}
-function trySendOneMail( $date_path, $to_be_sended_path, $sended_path ){
-	
-	global $paths;
-	global $posting;
-	global $data_items;
-	
-	if( !dateNotGone($date_path) && dateActive($date_path)  ) {
-		$sended_mail = sendOneEmail( $to_be_sended_path, $sended_path,  $paths, $posting,  $data_items   );
-		return $sended_mail;
-	}else{
-		return null;
-		echo "Send date in future or Date not active - no mail send";	
-	}
-}
+
 
 //--------------------------
 // List update
 //--------------------------
-if( $_POST['q'] == "update_list" ){
+if( $q == "update_list" ){
 	file_put_contents( $paths[ $posting ]['to_be_sended'], $_POST['list'] );
 	echo "List updated: " . $paths[ $posting ]['to_be_sended'];
 }
 //--------------------------
 // Register
 //---------------------------
-if( $_GET['q'] == "register" ){
+if( $q == "register" ){
 	
 	// CAN NON-INVITED REGISTER?
 	checkEmail( $email );
@@ -191,6 +181,30 @@ if( $_GET['q'] == "register" ){
 	
 	removeLine( $paths["reminders_not_registered"]['to_be_sended'], $email );
 	
+	//Send mail to registered
+	if( validEmail( $email ) ){
+		echo "Popped: " . $email;
+		
+		//Send mail
+		$event_mail = new EventMailer();
+		$event_mail->posting_type =  "register";
+		$event_mail->event_data =   $data_items;
+		
+		if( file_exists( $paths["register"]['body_text'] ) ){
+			$body_text = nl2br( file_get_contents( $paths["register"]['body_text'] ) );	
+			$event_mail->body_text = $body_text;
+		}else{
+			$event_mail->body_text = "";
+		}
+		
+		
+		$event_mail->send( $email );
+		
+		// Add to sended mails
+		addLine( $sended_path, $email );
+
+	}
+	 
 }
 //--------------------------
 // Get unregistered lis
@@ -208,49 +222,6 @@ if( $_GET['q'] == "list_unregistered" ){
 	echo implode( "\n",$unregistered_array );
 	
 }
-//--------------------------
-// Create new event files
-//---------------------------
-function add_new_event( $id ){
-	
-	global $data_path;
-	$path = $data_path.$id;
-	$paths = getPaths( $id );
-	
-	if( !empty( $id ) ){
-		
-		if( file_exists (  $path ) ){
-			exit( "Folder allready exists!" );
-		}
-		
-		mkdir( $path );
-		//Invite
-		mkdir( $path . "/invites"  );
-		//file_put_contents( $paths["invites"]['date'], "" );
-		file_put_contents( $paths["invites"]['sended'], "" );
-		file_put_contents( $paths["invites"]['to_be_sended'], "" );
-		//Registered
-		mkdir( $path . "/registered"  );
-		file_put_contents( $paths["register"]['registered'], "" );
-		//Reminder not registered
-		mkdir( $path . "/reminders_not_registered"  );
-		//file_put_contents( $paths["reminders_not_registered"]['date'], "" );
-		file_put_contents( $paths["reminders_not_registered"]['sended'], "" );
-		file_put_contents( $paths["reminders_not_registered"]['to_be_sended'] , "" );
-		//Reminder registered
-		mkdir( $path . "/reminders_registered"  );
-		//file_put_contents( $paths["reminders_registered"]['date'], "" );
-		file_put_contents( $paths["reminders_registered"]['sended'], "" );
-		file_put_contents( $paths["reminders_registered"]['to_be_sended'], "" );
-		//Poll
-		mkdir( $path . "/polls"  );
-		file_put_contents( $paths["polls"]['sended'], "" );
-		file_put_contents( $paths["polls"]['to_be_sended'], "" );
-		
-	}else{
-		exit( "No id!" );	
-	}
-}
 
 
 //--------------------------
@@ -264,21 +235,7 @@ if( $q == "list_created_events" ){
 	foreach( $events_array as $event ){
 		$json .= '{"folder_id":"' . $event->ID . '","folder_name" :"' . $event->post_title . '" },';
 	}
-	/*if ($handle = opendir( $data_path )) {
-		while(  false !== ($entry = readdir($handle))  ){
-			
-			$page = get_page( $entry );
-			$folder_name = $page->post_title;
-			
-       		$filetype = filetype( $data_path.$entry );
-			if( $filetype== "dir" && $entry!="." && $entry!=".." && $entry!="errors" ){
-				$json .= '{"folder_id":"' . $entry . '","folder_name" :"' . $folder_name . '" },';
-			}
-			
-    	}
-	}*/
-	
-	
+
 	$json = rtrim ( $json, "," );
 	$json .= "]}";
 	
@@ -293,11 +250,9 @@ function getEventsFromWordpress(){
 	
 	global $data_path;
 	foreach( $event_pages as $event_page ){
-		
 		if( !file_exists( $data_path . $event_page->ID ) ){
 			add_new_event(  $event_page->ID  );
 		}
-		
 	}
 	
 	return ( $event_pages );
@@ -328,36 +283,64 @@ if( $q == "update_body_text" ){
 //--------------------------
 // Paths
 //---------------------------
-if( $_GET['q'] == "get_paths" ){
+if( $q == "get_paths" ){
 	print_r( json_encode( $paths ) );	
 }
 //---------------------------
 // functions
 //---------------------------
-function moveEmail( $source, $target, $email ){
-	removeLine( $source, $email );
-	addLine( $target, $email );
+function trySendOneMail( $date_path, $to_be_sended_path, $sended_path ){
+	
+	global $paths;
+	global $posting;
+	global $data_items;
+	
+	$date_not_gone 	= dateNotGone($date_path);
+	$date_active 	= dateActive($date_path);
+	$main_switch_on = mainSwitchOn();
+	
+	if( !$date_not_gone && $date_active && $main_switch_on ) {
+		$sended_mail = sendOneEmail( $to_be_sended_path, $sended_path,  $paths, $posting,  $data_items   );
+		return $sended_mail;
+	}else{
+		if( $date_not_gone ){
+			$message = "lähetys ei ole vielä alkanut";	
+		}
+		if( !$date_active ){
+			$message = "Lähetyspäivämäärää ei ole vielä asetettu";	
+		}
+		if( !$main_switch_on ){
+			$message = "Lähetykset on kytketty pois pääkytkimestä " . mainSwitchOn() . " / ";	
+		}
+		
+		echo $message;
+		
+		return null;
+		
+	}
 }
 
-
 function sendOneEmail( $source_path, $sended_path, $paths, $posting,  $data_items  ){
-	
-	print_r( $data_items );
 	
 	//-------------------------
 	// Get next line
 	//-------------------------
 	$email = popLine ( $source_path );
 	
-	echo "Send one email from " . $source_path . " -> " . $email ;
-	
 	//--------------------------
 	// Do sending here
 	//--------------------------
 	if( validEmail( $email ) ){
-		echo "Popped: " . $email;
 		
-		//Send mail
+		//-------------------------------------------
+		// Check that mail is not in sended mails
+		//-------------------------------------------
+		if( !checkLineNotOnFile( $sended_path, $email ) ){
+			die( "Sähköposti on jo lähetettyjen listalla. Postia ei lähetetty uudestaan." ) ;
+		}
+		//-----------
+		// Send mail
+		//-----------
 		$event_mail = new EventMailer();
 		$event_mail->posting_type =  	$posting;
 		$event_mail->event_data =   $data_items;
@@ -369,26 +352,51 @@ function sendOneEmail( $source_path, $sended_path, $paths, $posting,  $data_item
 			$event_mail->body_text = "";
 		}
 		
-		
 		$event_mail->send( $email );
-		
+		//-------------------------------------------
 		// Add to sended mails
+		//-------------------------------------------
 		addLine( $sended_path, $email );
 		
-		
+		echo "Send one email from " . $source_path . " -> " . $email ;
+	
 		
 		return ($email);
 		
 	}else{
-		echo "NO Pop";
-		reportError("not valid email");
+		reportError("not valid email " .$email );
 		return("");
 	}
 	
 }
+function reportEmail( $sended_mail ){
+	if( !empty($sended_mail) ){ echo " Lähetettiin yksi posti" . $sended_mail; }else{ echo " Ei lähetetty postia"; }
+}
+
+function moveEmail( $source, $target, $email ){
+	removeLine( $source, $email );
+	addLine( $target, $email );
+}
+
 //-----------
 // Date
 //-----------
+function mainSwitchOn(){
+	
+	global $paths;
+	
+	if( file_exists( $paths["on_off"]['on_off'] ) ){
+		$on_off_status = file_get_contents( $paths["on_off"]['on_off'] );
+		if( $on_off_status == "1" ){
+			return true;	
+		}else{
+			return false;	
+		}
+	}else{
+		return false;	
+	}	
+}
+
 function dateActive( $date_file ){
 	if (  file_exists( $date_file )  ){
 		$date_string = file_get_contents( $date_file );
@@ -468,6 +476,50 @@ function saveArrayToFile( $path, $array ){
 }
 
 
+//--------------------------
+// Create new event files
+//---------------------------
+function add_new_event( $id ){
+	
+	global $data_path;
+	$path = $data_path.$id;
+	$paths = getPaths( $id );
+	
+	if( !empty( $id ) ){
+		
+		if( file_exists (  $path ) ){
+			exit( "Folder allready exists!" );
+		}
+		
+		mkdir( $path );
+		//Invite
+		mkdir( $path . "/invites"  );
+		//file_put_contents( $paths["invites"]['date'], "" );
+		file_put_contents( $paths["invites"]['sended'], "" );
+		file_put_contents( $paths["invites"]['to_be_sended'], "" );
+		//Registered
+		mkdir( $path . "/registered"  );
+		file_put_contents( $paths["register"]['registered'], "" );
+		file_put_contents( $paths["register"]['body_text'], "" );
+		//Reminder not registered
+		mkdir( $path . "/reminders_not_registered"  );
+		//file_put_contents( $paths["reminders_not_registered"]['date'], "" );
+		file_put_contents( $paths["reminders_not_registered"]['sended'], "" );
+		file_put_contents( $paths["reminders_not_registered"]['to_be_sended'] , "" );
+		//Reminder registered
+		mkdir( $path . "/reminders_registered"  );
+		//file_put_contents( $paths["reminders_registered"]['date'], "" );
+		file_put_contents( $paths["reminders_registered"]['sended'], "" );
+		file_put_contents( $paths["reminders_registered"]['to_be_sended'], "" );
+		//Poll
+		mkdir( $path . "/polls"  );
+		file_put_contents( $paths["polls"]['sended'], "" );
+		file_put_contents( $paths["polls"]['to_be_sended'], "" );
+		
+	}else{
+		exit( "No id!" );	
+	}
+}
 
 
 
@@ -517,8 +569,8 @@ function checkLineNotOnFile( $path, $line ){
 //---------------------------
 function checkFile( $path ){
 	if( !file_exists($path) ){
-		reportError("no such file");
-		exit("No such file!");
+		reportError("no such file" . $path);
+		exit("No such file! " . $path );
 	}
 }
 //---------------------------
