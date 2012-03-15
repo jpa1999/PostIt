@@ -17,10 +17,10 @@ var MainView = function( model ){
 		
 		this.changePage()
 		this.initNavButtons()
+		this.getCronStatus()
 		
 		if( this.model.id ){
 			this.updateTitle()
-			
 			this.updateOnOff()
 		}
 	}
@@ -135,7 +135,7 @@ var MainView = function( model ){
 		
 	}
 	this.sendOne = function( target, id ){
-		$.get( "../?q=send_one_" +target+ "&posting=" +target+ "&id=" + id,{}, function( data ){ alert( data ); window.location.reload()  })
+		$.get( "../?q=send_one_" +target+ "&posting=" +target+ "&id=" + id,{}, function( data ){ alert( data ); /*window.location.reload()*/  })
 	}
 
 	
@@ -143,7 +143,7 @@ var MainView = function( model ){
 		$.get( "../?q=add_to_invite&id=" +id+ "&email=" + $(".invite_add_email .email").val(),{}, function(){ window.location.reload() })
 	}
 	this.sendRegister = function ( hash_target, id){
-		$.get( "../?q=register&id=" +id+ "&email=" + $(".register .register_email").val(),{}, function(){ /*window.location.reload()*/  })
+		$.get( "../?q=register&id=" +id+ "&email=" + $(".register .register_email").val(),{}, function( data ){ alert( data ); /*window.location.reload()*/  })
 	}
 
 	//------------------------------------
@@ -246,6 +246,12 @@ var MainView = function( model ){
 																							$(".quick_view ." +target+ ".item .date").html( "-" )
 																						}
 																					}) 
+	}
+	//--------------------------------
+	// Cron
+	//---------------------------------
+	this.getCronStatus = function(){
+		$(".cron").load( "../?q=cron_status" )	
 	}
 	
 	//--------------------------------
